@@ -11,7 +11,7 @@
 #define SECTION_FILES			0
 #define SECTION_ACTIONS			1
 
-#define ACTIONS_ROW_TRANSFER	0
+#define ROW_ACTIONS_TRANSFER	0
 
 #define SKIP_INVISIBLE			YES
 
@@ -20,6 +20,8 @@
 	NSString *inputFile;
 	NSMutableArray *files;
 }
+
+- (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
 
 - (void)showSettings;
 - (void)hideSettings;

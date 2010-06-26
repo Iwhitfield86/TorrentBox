@@ -58,6 +58,7 @@
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+	
 	return YES;
 }
 
@@ -77,6 +78,11 @@
 	
 	switch (section) {
 		case SECTION_FILES:
+			if ([files count] == 0) {
+				// 'No files found.' row
+				return 1;
+			}
+			return [files count];
 			break;
 		case SECTION_ACTIONS:
 			// ACTIONS_ROW_TRANSFER
@@ -87,19 +93,68 @@
 }
 
 
+- (NSString *) tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+	
+	switch (section) {
+		case SECTION_FILES:
+			return @"Files";
+	}
+	return @"";
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+	
+	switch (section) {
+		case SECTION_FILES:
+			return @"Select files to transfer.";
+	}
+	return @"";
+}
+
+
 // Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *CellIdentifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-    }
+	UITableViewCell *cell = nil;
     
 	// Configure the cell.
-
+	switch (indexPath.section) {
+		case SECTION_FILES:
+			; // TODO: something is amiss, I dont know why I have to put a semi here...
+			if ([files count] == 0) {
+				cell = [self cellFromTableView:tableView WithIdentifier:@"CenteredCell"];
+				cell.textLabel.textAlignment = UITextAlignmentCenter;
+				cell.textLabel.text = @"No files found.";
+			}
+			else {
+				cell = [self cellFromTableView:tableView WithIdentifier:@"CheckableCell"];
+				NSURL *fileUrl = [files objectAtIndex:[indexPath row]];
+				NSString *fileName = [[fileUrl path] lastPathComponent];
+				cell.textLabel.text = fileName;
+			}
+			break;
+		case SECTION_ACTIONS:
+			cell = [self cellFromTableView:tableView WithIdentifier:@"CenteredCell"];
+			if (indexPath.row == ROW_ACTIONS_TRANSFER) {
+				cell.textLabel.textAlignment = UITextAlignmentCenter;
+				cell.textLabel.text = @"Transfer";
+			}
+			break;
+	}
+	
     return cell;
+}
+
+
+// Helper to simplify retrieval of a reusable cell
+- (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier {
+	
+	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    if (cell == nil) {
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier] autorelease];
+    }
+	
+	return cell;
 }
 
 
@@ -114,19 +169,33 @@
 }
 
 
-/*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
+	
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
+		switch ([indexPath section]) {
+			case SECTION_FILES:
+				;
+				NSURL *fileUrl = [files objectAtIndex:indexPath.row];
+				
+				// Delete the actual file
+				NSFileManager *manager = [NSFileManager defaultManager];
+				NSError *error = nil;
+				if (![manager removeItemAtPath:[fileUrl path] error:&error]) {
+					NSLog(@"Failed to delete %@: %@", [fileUrl path], error.description);
+					break;
+				}
+				
+				// Remove the Url from the file list
+				[files removeObjectAtIndex:indexPath.row];
+				
+				// Remove the row from the table
+				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+				break;
+		}
+    }
 }
-*/
 
 
 #pragma mark -
