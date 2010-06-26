@@ -1,0 +1,170 @@
+// !$*UTF8*$!
+{
+	1D6058900D05DD3D006BFB54 /* TorrentBox */ = {
+		activeExec = 0;
+		executables = (
+			D3D9826011D69E3B00E14C3D /* TorrentBox */,
+		);
+	};
+	28C286DF0D94DF7D0034E888 /* RootViewController.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1171, 765}}";
+			sepNavSelRange = "{201, 0}";
+			sepNavVisRange = "{0, 328}";
+		};
+	};
+	28C286E00D94DF7D0034E888 /* RootViewController.m */ = {
+		uiCtxt = {
+			sepNavFolds = "{\n    c =     (\n                {\n            l = DetailViewController;\n            r = \"{3108, 24}\";\n            s = 1;\n        },\n                {\n            l = DetailViewController;\n            r = \"{3159, 24}\";\n            s = 1;\n        },\n                {\n            l = \"Nib name\";\n            r = \"{3209, 12}\";\n            s = 1;\n        }\n    );\n    r = \"{0, 3905}\";\n    s = 0;\n}";
+			sepNavIntBoundsRect = "{{0, 0}, {1171, 2132}}";
+			sepNavSelRange = "{3101, 0}";
+			sepNavVisRange = "{2222, 1626}";
+		};
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Debug;
+		activeExecutable = D3D9826011D69E3B00E14C3D /* TorrentBox */;
+		activeSDKPreference = iphonesimulator3.2;
+		activeTarget = 1D6058900D05DD3D006BFB54 /* TorrentBox */;
+		addToTargets = (
+			1D6058900D05DD3D006BFB54 /* TorrentBox */,
+		);
+		codeSenseManager = D3D9827711D69E5000E14C3D /* Code sense */;
+		executables = (
+			D3D9826011D69E3B00E14C3D /* TorrentBox */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					993,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					953,
+					60,
+					20,
+					48.16259765625,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 299277883;
+			PBXWorkspaceStateSaveDate = 299277883;
+		};
+		perUserProjectItems = {
+			D3D982C411D6A54E00E14C3D /* PBXTextBookmark */ = D3D982C411D6A54E00E14C3D /* PBXTextBookmark */;
+			D3D982C511D6A54E00E14C3D /* PBXTextBookmark */ = D3D982C511D6A54E00E14C3D /* PBXTextBookmark */;
+			D3D982C611D6A54E00E14C3D /* PBXTextBookmark */ = D3D982C611D6A54E00E14C3D /* PBXTextBookmark */;
+		};
+		sourceControlManager = D3D9827611D69E5000E14C3D /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	8D1107310486CEB800E47090 /* TorrentBox-Info.plist */ = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{15, 4}, {1416, 874}}";
+		};
+	};
+	D3D9826011D69E3B00E14C3D /* TorrentBox */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 0;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		dataTipCustomDataFormattersEnabled = 1;
+		dataTipShowTypeColumn = 1;
+		dataTipSortType = 0;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = TorrentBox;
+		showTypeColumn = 0;
+		sourceDirectories = (
+		);
+	};
+	D3D9827611D69E5000E14C3D /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+			repositoryNamesForRoots = {
+				"" = "";
+			};
+		};
+	};
+	D3D9827711D69E5000E14C3D /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	D3D982C411D6A54E00E14C3D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 28C286DF0D94DF7D0034E888 /* RootViewController.h */;
+		name = "RootViewController.h: 11";
+		rLen = 0;
+		rLoc = 201;
+		rType = 0;
+		vrLen = 328;
+		vrLoc = 0;
+	};
+	D3D982C511D6A54E00E14C3D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */;
+		name = "RootViewController.m: 70";
+		rLen = 0;
+		rLoc = 1507;
+		rType = 0;
+		vrLen = 1295;
+		vrLoc = 709;
+	};
+	D3D982C611D6A54E00E14C3D /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 28C286E00D94DF7D0034E888 /* RootViewController.m */;
+		name = "RootViewController.m: 132";
+		rLen = 0;
+		rLoc = 3101;
+		rType = 0;
+		vrLen = 1683;
+		vrLoc = 2222;
+	};
+}
