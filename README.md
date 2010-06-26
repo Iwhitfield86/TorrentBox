@@ -7,7 +7,7 @@ This project's goal is to add support for handling BitTorrent metadata files to 
 
 iOS devices do not have the necessary resources for performing BitTorrent file transfers locally.  However, by pushing the .torrent files to another host the metadata can be used later to begin BitTorrent transfers on another host.
 
-Using the [Dropbox API](getdropbox.com) it is possible to do just this, so that BitTorrent transfers can be intiated manually later. In an advanced configurations, users may find it useful to have their BitTorrent clients watch their Dropbox directory and automatically begin transfers when new files are added.
+Using the [Dropbox API](http://www.dropbox.com) it is possible to do just this, so that BitTorrent transfers can be intiated manually later. In an advanced configurations, users may find it useful to have their BitTorrent clients watch their Dropbox directory and automatically begin transfers when new files are added.
 
 Scope
 -----
@@ -19,5 +19,5 @@ TBD
 
 Contact
 -------
-[Brian Partridge](thelaughingman@gmail.com)
+[Brian Partridge](http://github.com/brianpartridge)
 
