@@ -19,14 +19,19 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
-
-    self.title = @"TorrentBox";
 	
 	self.navigationItem.rightBarButtonItem = self.editButtonItem;
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"gear.png"]
 																			 style:UIBarButtonItemStylePlain 
 																			target:self 
 																			action:@selector(showSettings)];
+	
+	if (!files) {
+		files = [[NSMutableArray alloc] init];
+	}
+	
+	// Get the local files to populate the table view
+	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(identifyLocalFiles) userInfo:nil repeats:NO];
 }
 
 
@@ -161,6 +166,7 @@
     [super dealloc];
 }
 
+
 #pragma mark -
 #pragma mark Settings management
 
@@ -169,7 +175,7 @@
 	SettingsViewController *settings = [[SettingsViewController alloc] initWithNibName:@"SettingsViewController" bundle:nil];
 	settings.title = @"Settings";
 	settings.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" 
-																				  style:UIBarButtonItemStyleDone 
+																				  style:UIBarButtonItemStyleDone
 																				 target:self 
 																				 action:@selector(hideSettings)];
 	
@@ -181,7 +187,72 @@
 	
 	[self dismissModalViewControllerAnimated:YES];
 }
+
+
+#pragma mark -
+#pragma mark UI management
+
+- (void)updateFileList {
+
+	[self.tableView reloadData];
+}
+
+#pragma mark -
+#pragma mark File management
+
+- (void)identifyLocalFiles {
 	
+	NSFileManager *manager = [NSFileManager defaultManager];
+	
+	NSArray *documentPaths =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+	if ([documentPaths count] == 0) { return; }
+	
+	NSString *documentPath = [documentPaths objectAtIndex:0];
+	if (documentPath == nil) { return; }
+	NSLog(@"Document directory: %@", documentPath);
+	
+	if (![manager fileExistsAtPath:documentPath]) { return; }
+	
+	NSString *inboxPath = [documentPath stringByAppendingPathComponent:@"Inbox"];
+	if (inboxPath == nil) { return; }
+	NSLog(@"Inbox directory: %@", inboxPath);
+	
+	if (![manager fileExistsAtPath:inboxPath]) { return; }
+	
+	NSError *error = nil;
+	NSArray *inboxFiles = [manager contentsOfDirectoryAtPath:inboxPath error:&error];
+	if (inboxFiles == nil || error != nil) {
+		NSLog(@"Error: %@", [error description]);
+	}
+	
+	for (int i=0; i < [inboxFiles count]; ++i) {
+		NSString *fileName = [inboxFiles objectAtIndex:i];
+		
+		if (SKIP_INVISIBLE && [fileName hasPrefix:@"."]) {
+			continue;
+		}
+		
+		if (fileName != nil) {
+			NSURL *fileUrl = [NSURL fileURLWithPath:[inboxPath stringByAppendingPathComponent:fileName]];
+			NSLog(@"File: %@", [fileUrl path]);
+			[files addObject:fileUrl];
+		}
+	}
+	
+	[self updateFileList];
+}
+
+- (void)deleteFileAtPath:(NSURL *)fileUrl {
+	
+	NSLog(@"Deleting: %@", [fileUrl path]);
+	
+	NSFileManager *manager = [NSFileManager defaultManager];	
+	NSError *error = nil;
+	if (![manager removeItemAtPath:[fileUrl path] error:&error]) {
+		NSLog(@"Error: %@", [error description]);
+	}
+}
+
 
 @end
 
