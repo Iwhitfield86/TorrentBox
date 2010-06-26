@@ -203,15 +203,29 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+	UITableViewCell *selectedCell = [tableView cellForRowAtIndexPath:indexPath];
 	
-	/*
-	 <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-	 [self.navigationController pushViewController:detailViewController animated:YES];
-	 [detailViewController release];
-	 */
+	switch ([indexPath section]) {
+		case SECTION_FILES:
+			[tableView deselectRowAtIndexPath:indexPath animated:YES];
+			
+			if ([files count] == 0) {
+				break;
+			}
+			
+			if (selectedCell.accessoryType == UITableViewCellAccessoryNone) {
+				selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
+			}
+			else if (selectedCell.accessoryType == UITableViewCellAccessoryCheckmark) {
+				selectedCell.accessoryType = UITableViewCellAccessoryNone;
+			}
+			
+			break;
+		case SECTION_ACTIONS:
+			[tableView deselectRowAtIndexPath:indexPath animated:YES];
+			[self transferFiles];
+			break;
+	}
 }
 
 
@@ -323,5 +337,12 @@
 }
 
 
+#pragma mark -
+#pragma mark File transfer management
+
+- (void)transferFiles {
+	
+	
+}
 @end
 

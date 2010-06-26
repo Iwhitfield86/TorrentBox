@@ -31,4 +31,6 @@
 - (void)identifyLocalFiles;
 - (void)deleteFileAtPath:(NSURL *)fileUrl;
 
+- (void)transferFiles;
+
 @end
