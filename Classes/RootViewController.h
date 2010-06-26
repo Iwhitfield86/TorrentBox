@@ -16,4 +16,7 @@
 @interface RootViewController : UITableViewController {
 }
 
+- (void)showSettings;
+- (void)hideSettings;
+
 @end

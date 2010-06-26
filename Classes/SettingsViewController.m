@@ -1,34 +1,31 @@
 //
-//  RootViewController.m
+//  SettingsViewController.m
 //  TorrentBox
 //
 //  Created by Brian Partridge on 6/26/10.
-//  Copyright __MyCompanyName__ 2010. All rights reserved.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#import "RootViewController.h"
 #import "SettingsViewController.h"
 
 
-@implementation RootViewController
+@implementation SettingsViewController
 
 
 #pragma mark -
 #pragma mark View lifecycle
 
+/*
 - (void)viewDidLoad {
-	
     [super viewDidLoad];
 
-    self.title = @"TorrentBox";
-	
-	self.navigationItem.rightBarButtonItem = self.editButtonItem;
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"gear.png"]
-																			 style:UIBarButtonItemStylePlain 
-																			target:self 
-																			action:@selector(showSettings)];
+    // Uncomment the following line to preserve selection between presentations.
+    self.clearsSelectionOnViewWillAppear = NO;
+ 
+    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
-
+*/
 
 /*
 - (void)viewWillAppear:(BOOL)animated {
@@ -42,42 +39,34 @@
 */
 /*
 - (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
+    [super viewWillDisappear:animated];
 }
 */
 /*
 - (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
+    [super viewDidDisappear:animated];
 }
 */
-
-
+/*
+// Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-	return YES;
+    // Return YES for supported orientations
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+*/
 
 
 #pragma mark -
 #pragma mark Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
-	// SECTION_FILES
-	// SECTION_ACTIONS
-    return 2;
+    // Return the number of sections.
+    return 0;
 }
 
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	
-	switch (section) {
-		case SECTION_FILES:
-			break;
-		case SECTION_ACTIONS:
-			// ACTIONS_ROW_TRANSFER
-			return 1;
-			break;
-	}
+    // Return the number of rows in the section.
     return 0;
 }
 
@@ -92,21 +81,19 @@
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
     }
     
-	// Configure the cell.
-
+    // Configure the cell...
+    
     return cell;
 }
 
 
+/*
+// Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-
-	switch (indexPath.section) {
-		case SECTION_FILES:
-			return YES;
-			break;
-	}
-    return NO;
+    // Return NO if you do not want the specified item to be editable.
+    return YES;
 }
+*/
 
 
 /*
@@ -114,12 +101,28 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source.
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        // Delete the row from the data source
+        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:YES];
     }   
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
+        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
+}
+*/
+
+
+/*
+// Override to support rearranging the table view.
+- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+}
+*/
+
+
+/*
+// Override to support conditional rearranging of the table view.
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return NO if you do not want the item to be re-orderable.
+    return YES;
 }
 */
 
@@ -128,9 +131,7 @@
 #pragma mark Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
-	
+    // Navigation logic may go here. Create and push another view controller.
 	/*
 	 <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
      // ...
@@ -161,27 +162,6 @@
     [super dealloc];
 }
 
-#pragma mark -
-#pragma mark Settings management
-
-- (void)showSettings {
-	
-	SettingsViewController *settings = [[SettingsViewController alloc] initWithNibName:@"SettingsViewController" bundle:nil];
-	settings.title = @"Settings";
-	settings.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" 
-																				  style:UIBarButtonItemStyleDone 
-																				 target:self 
-																				 action:@selector(hideSettings)];
-	
-	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:settings];
-	[self presentModalViewController:nav animated:YES];
-}
-
-- (void)hideSettings {
-	
-	[self dismissModalViewControllerAnimated:YES];
-}
-	
 
 @end
 
