@@ -85,7 +85,7 @@
 			return [files count];
 			break;
 		case SECTION_ACTIONS:
-			// ACTIONS_ROW_TRANSFER
+			// ROW_ACTIONS_TRANSFER
 			return 1;
 			break;
 	}
