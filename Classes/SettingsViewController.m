@@ -119,14 +119,25 @@
 	switch (indexPath.section) {
 		case SECTION_DB_CRED:
 			cell = [self cellFromTableView:tableView WithIdentifier:@"InputCell"];
+			
+			UITextField *textField = [[UITextField alloc] initWithFrame:cell.frame];
+			textField.delegate = self;
+			textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
+			textField.textColor = [UIColor colorWithRed:0.22 green:0.33 blue:0.53 alpha:1];
+
+			cell.accessoryView = textField;
+			
 			switch (indexPath.row) {
 				case ROW_DB_CRED_EMAIL:
 					cell.textLabel.text = @"Email";
 					break;
 				case ROW_DB_CRED_PASS:
 					cell.textLabel.text = @"Password";
+					textField.secureTextEntry = YES;
 					break;
 			}
+			
+			[textField release];
 			break;
 		case SECTION_DB_ACTIONS:
 			cell = [self cellFromTableView:tableView WithIdentifier:@"CenteredCell"];
@@ -137,8 +148,13 @@
 			break;
 		case SECTION_SETTINGS:
 			cell = [self cellFromTableView:tableView WithIdentifier:@"SwitchCell"];
+						
 			if (indexPath.row == ROW_SETTINGS_AUTO) {
 				cell.textLabel.text = @"Auto transfer new files";
+				
+				UISwitch *radioButton = [[UISwitch alloc] initWithFrame:CGRectZero];
+				cell.accessoryView = radioButton;
+				[radioButton release];
 			}
 			break;
 		case SECTION_INFO:
