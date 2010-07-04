@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DBUploader.h"
 
 #define SECTION_DB_CRED			0
 #define SECTION_DB_ACTIONS		1
@@ -23,11 +24,12 @@
 #define ROW_INFO_VERSION		0
 #define ROW_INFO_COPYRIGHT		1
 
-@interface SettingsViewController : UITableViewController {
+@interface SettingsViewController : UITableViewController <DBUploaderDelegate>{
 
 }
 
 - (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
 
+- (void)authenticateWithEmail:(NSString *)email password:(NSString *)password;
 
 @end

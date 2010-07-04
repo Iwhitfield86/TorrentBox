@@ -205,7 +205,8 @@
 	switch ([indexPath section]) {
 		case SECTION_DB_ACTIONS:
 			if (indexPath.row == ROW_DB_ACTIONS_AUTH) {
-				// Login To Dropbox
+				// TODO: populate with real field values
+				[self authenticateWithEmail:@"" password:@""];
 			}
 			break;
 	}
@@ -230,6 +231,34 @@
 
 - (void)dealloc {
     [super dealloc];
+}
+
+#pragma mark -
+#pragma mark Dropbox authentication
+- (void)authenticateWithEmail:(NSString *)email password:(NSString *)password {
+	
+	DBUploader *uploader = [[DBUploader alloc] init];
+	uploader.delegate = self;
+	
+	// TODO: start spinner and login
+}
+
+- (void)uploaderDidLogin:(DBUploader *)uploader {
+	
+	NSLog(@"Loggedin");
+
+	// TODO: stop spinner 
+	
+	[uploader release];
+}
+
+- (void)uploader:(DBUploader *)uploader loginFailedWithError:(NSError *)error {
+	
+	NSLog(@"Login failed");
+	
+	// TODO: stop spinner and alert user
+	
+	[uploader release];
 }
 
 
