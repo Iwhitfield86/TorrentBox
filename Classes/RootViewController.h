@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DBUploader.h"
 
 #define SECTION_FILES			0
 #define SECTION_ACTIONS			1
@@ -15,13 +16,14 @@
 
 #define SKIP_INVISIBLE			YES
 
-@interface RootViewController : UITableViewController {
+@interface RootViewController : UITableViewController <DBUploaderDelegate>{
 	
 	NSString *inputFile;
 	NSMutableArray *files;
 }
 
 - (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
+- (NSArray *)checkedRowsInTableView:(UITableView *)tableView section:(NSInteger)section;
 
 - (void)showSettings;
 - (void)hideSettings;
@@ -30,6 +32,7 @@
 
 - (void)identifyLocalFiles;
 - (void)deleteFileAtPath:(NSURL *)fileUrl;
+- (NSArray *)urlsForCheckedFiles;
 
 - (void)transferFiles;
 

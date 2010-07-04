@@ -120,7 +120,6 @@
 	// Configure the cell.
 	switch (indexPath.section) {
 		case SECTION_FILES:
-			; // TODO: something is amiss, I dont know why I have to put a semi here...
 			if ([files count] == 0) {
 				cell = [self cellFromTableView:tableView WithIdentifier:@"CenteredCell"];
 				cell.textLabel.textAlignment = UITextAlignmentCenter;
@@ -229,6 +228,23 @@
 }
 
 
+// Iterate the cells in the table view to find the ones that have checkmarks
+- (NSArray *)checkedRowsInTableView:(UITableView *)tableView section:(NSInteger)section {
+	
+	NSMutableArray *checkedCellIndexPaths = [[NSMutableArray alloc] init];
+	
+	NSInteger count = [tableView numberOfRowsInSection:section];
+	for (int i = 0; i < count; ++i) {
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:section];
+		UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+		if (cell.accessoryType == UITableViewCellAccessoryCheckmark) {
+			[checkedCellIndexPaths addObject:indexPath];
+		}
+	}
+	
+	return checkedCellIndexPaths;
+}
+
 #pragma mark -
 #pragma mark Memory management
 
@@ -336,13 +352,68 @@
 	}
 }
 
+// Return the Urls of the files checked in the table view
+- (NSArray *)urlsForCheckedFiles {
+	
+	NSMutableArray *fileUrls = [[NSMutableArray alloc] init];
+	
+	NSArray *checkedFiles = [self checkedRowsInTableView:self.tableView section:SECTION_FILES];
+	NSEnumerator *enumerator = [checkedFiles objectEnumerator];
+	id object;
+	while (object = [enumerator nextObject]) {
+		[fileUrls addObject:[files objectAtIndex:[(NSIndexPath *)object row]]];
+	}
+	[checkedFiles release];
+	
+	return fileUrls;
+}
+
 
 #pragma mark -
 #pragma mark File transfer management
 
 - (void)transferFiles {
 	
-	
+	DBUploader *uploader = [[DBUploader alloc] initWithFiles:[self urlsForCheckedFiles]];
+	uploader.delegate = self;
+	[uploader upload];
 }
+
+- (void)uploaderBeganTransferringFiles:(DBUploader *)uploader {
+	
+	// TODO: start spinner
+	NSLog(@"Started");
+}
+
+- (void)uploader:(DBUploader *)uploader beganTransferringFile:(NSString *)file {
+	
+	// TODO: set filename on spinner
+	NSLog(@"Started %@", file);
+}
+
+- (void)uploader:(DBUploader *)uploader successfullyTransferredFile:(NSString *)file {
+	
+	// TODO: remove filename from spinner
+	NSLog(@"Finished %@", file);
+}
+
+- (void)uploader:(DBUploader *)uploader failedToTransferFile:(NSString *)file withError:(NSError *)error {
+	
+	// TODO: remove filename from spinner
+	NSLog(@"Failed %@", file);
+}
+
+- (void)uploaderSuccessfullyTransferredFiles:(DBUploader *)uploader {
+	
+	// TODO: display 'success' then stop/clear spinner
+	NSLog(@"Finished");
+}
+
+- (void)uploaderHaltedFileTransfers:(DBUploader *)uploader {
+	
+	// TODO: display 'error' then stop/clear spinner
+	NSLog(@"Halted");
+}
+
 @end
 
