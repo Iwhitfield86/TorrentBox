@@ -42,6 +42,7 @@
 		D3432C9911E13EA900D3A80E /* NSURL+MPURLParameterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = D3432C7E11E13EA900D3A80E /* NSURL+MPURLParameterAdditions.m */; };
 		D3432C9A11E13EA900D3A80E /* NSURLResponse+Encoding.m in Sources */ = {isa = PBXBuildFile; fileRef = D3432C8011E13EA900D3A80E /* NSURLResponse+Encoding.m */; };
 		D37868AF11E141D50069B42D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37868AE11E141D50069B42D /* Security.framework */; };
+		D37868BA11E142820069B42D /* DBUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = D37868B911E142820069B42D /* DBUploader.m */; };
 		D3D9829011D6A03000E14C3D /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D9828F11D6A03000E14C3D /* gear.png */; };
 		D3D9834B11D6B29C00E14C3D /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D9834911D6B29C00E14C3D /* SettingsViewController.m */; };
 		D3D9834C11D6B29C00E14C3D /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D9834A11D6B29C00E14C3D /* SettingsViewController.xib */; };
@@ -118,6 +119,8 @@
 		D3432C8011E13EA900D3A80E /* NSURLResponse+Encoding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURLResponse+Encoding.m"; sourceTree = "<group>"; };
 		D3432C9D11E13EFA00D3A80E /* DBConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBConfig.h; sourceTree = "<group>"; };
 		D37868AE11E141D50069B42D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		D37868B811E142820069B42D /* DBUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBUploader.h; sourceTree = "<group>"; };
+		D37868B911E142820069B42D /* DBUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBUploader.m; sourceTree = "<group>"; };
 		D3D9828F11D6A03000E14C3D /* gear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gear.png; sourceTree = "<group>"; };
 		D3D9834811D6B29C00E14C3D /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
 		D3D9834911D6B29C00E14C3D /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
@@ -148,6 +151,8 @@
 				1D3623250D0F684500981E51 /* TorrentBoxAppDelegate.m */,
 				D3D9834811D6B29C00E14C3D /* SettingsViewController.h */,
 				D3D9834911D6B29C00E14C3D /* SettingsViewController.m */,
+				D37868B811E142820069B42D /* DBUploader.h */,
+				D37868B911E142820069B42D /* DBUploader.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -385,6 +390,7 @@
 				D3432C9811E13EA900D3A80E /* NSString+URLEscapingAdditions.m in Sources */,
 				D3432C9911E13EA900D3A80E /* NSURL+MPURLParameterAdditions.m in Sources */,
 				D3432C9A11E13EA900D3A80E /* NSURLResponse+Encoding.m in Sources */,
+				D37868BA11E142820069B42D /* DBUploader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
