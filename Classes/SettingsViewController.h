@@ -30,6 +30,6 @@
 
 - (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
 
-- (void)authenticateWithEmail:(NSString *)email password:(NSString *)password;
+- (void)loginWithEmail:(NSString *)email password:(NSString *)password;
 
 @end

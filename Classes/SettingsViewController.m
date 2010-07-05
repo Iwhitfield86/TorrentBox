@@ -206,7 +206,7 @@
 		case SECTION_DB_ACTIONS:
 			if (indexPath.row == ROW_DB_ACTIONS_AUTH) {
 				// TODO: populate with real field values
-				[self authenticateWithEmail:@"" password:@""];
+				[self loginWithEmail:@"" password:@""];
 			}
 			break;
 	}
@@ -235,12 +235,14 @@
 
 #pragma mark -
 #pragma mark Dropbox authentication
-- (void)authenticateWithEmail:(NSString *)email password:(NSString *)password {
+- (void)loginWithEmail:(NSString *)email password:(NSString *)password {
 	
 	DBUploader *uploader = [[DBUploader alloc] init];
 	uploader.delegate = self;
 	
-	// TODO: start spinner and login
+	// TODO: start spinner
+
+	[uploader loginWithEmail:email password:password];
 }
 
 - (void)uploaderDidLogin:(DBUploader *)uploader {
