@@ -78,9 +78,9 @@
 		[client uploadFile:fileName toPath:@"/" fromPath:[fileUrl path]];
 	}
 	else {
-		if ([delegate respondsToSelector:@selector(uploaderHaltedFileTransfers:)]) 
+		if ([delegate respondsToSelector:@selector(uploaderSuccessfullyTransferredFiles:)]) 
 		{
-			[delegate uploaderHaltedFileTransfers:self];
+			[delegate uploaderSuccessfullyTransferredFiles:self];
 		}
 		
 		[enumerator release];
@@ -131,6 +131,11 @@
     {
 		// TODO: fill in the sourcePath from the error.userInfo
         [delegate uploader:self failedToTransferFile:@"" withError:error];
+    }
+	
+	if ([delegate respondsToSelector:@selector(uploaderHaltedFileTransfers:)]) 
+    {
+        [delegate uploaderHaltedFileTransfers:self];
     }
 }
 
