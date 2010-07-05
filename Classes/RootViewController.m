@@ -179,10 +179,9 @@
 				NSURL *fileUrl = [files objectAtIndex:indexPath.row];
 				
 				// Delete the actual file
-				NSFileManager *manager = [NSFileManager defaultManager];
 				NSError *error = nil;
-				if (![manager removeItemAtPath:[fileUrl path] error:&error]) {
-					NSLog(@"Failed to delete %@: %@", [fileUrl path], error.description);
+				if (![[NSFileManager defaultManager] removeItemAtPath:[fileUrl path] error:&error]) {
+					NSLog(@"Error deleting %@: %@", [fileUrl path], error.description);
 					break;
 				}
 				
@@ -341,17 +340,6 @@
 	[self updateFileList];
 }
 
-- (void)deleteFileAtPath:(NSURL *)fileUrl {
-	
-	NSLog(@"Deleting: %@", [fileUrl path]);
-	
-	NSFileManager *manager = [NSFileManager defaultManager];	
-	NSError *error = nil;
-	if (![manager removeItemAtPath:[fileUrl path] error:&error]) {
-		NSLog(@"Error: %@", [error description]);
-	}
-}
-
 // Return the Urls of the files checked in the table view
 - (NSArray *)urlsForCheckedFiles {
 	
@@ -374,45 +362,68 @@
 
 - (void)transferFiles {
 	
-	DBUploader *uploader = [[DBUploader alloc] initWithFiles:[self urlsForCheckedFiles]];
+	NSArray *fileUrls = [self urlsForCheckedFiles];
+	if ([fileUrls count] == 0) {
+		// TODO: display alert to user
+		return;
+	}
+	
+	DBUploader *uploader = [[DBUploader alloc] initWithFiles:fileUrls];
 	uploader.delegate = self;
 	[uploader upload];
 }
 
 - (void)uploaderBeganTransferringFiles:(DBUploader *)uploader {
 	
-	// TODO: start spinner
-	NSLog(@"Started");
+	if (spinner == nil) {
+		spinner = [[MBProgressHUD alloc] initWithView:self.view];
+		spinner.mode = MBProgressHUDModeIndeterminate;
+		[self.view addSubview:spinner];
+	}
+	spinner.labelText = @"";
+	spinner.detailsLabelText = @"";
+	[spinner show:YES];
 }
 
 - (void)uploader:(DBUploader *)uploader beganTransferringFile:(NSString *)file {
 	
-	// TODO: set filename on spinner
-	NSLog(@"Started %@", file);
+	spinner.labelText = [file lastPathComponent];
+	spinner.detailsLabelText = @"";
 }
 
 - (void)uploader:(DBUploader *)uploader successfullyTransferredFile:(NSString *)file {
 	
-	// TODO: remove filename from spinner
-	NSLog(@"Finished %@", file);
+	spinner.labelText = @"";
+	spinner.detailsLabelText = @"";
+	
+	NSError *error = nil;
+	if (![[NSFileManager defaultManager] removeItemAtPath:file error:&error]) {
+		NSLog(@"Error deleting %@: %@", file, [error description]);
+	}
 }
 
 - (void)uploader:(DBUploader *)uploader failedToTransferFile:(NSString *)file withError:(NSError *)error {
 	
-	// TODO: remove filename from spinner
-	NSLog(@"Failed %@", file);
+	spinner.labelText = [file lastPathComponent];
+	spinner.detailsLabelText = @"Failed";
 }
 
 - (void)uploaderSuccessfullyTransferredFiles:(DBUploader *)uploader {
 	
-	// TODO: display 'success' then stop/clear spinner
-	NSLog(@"Finished");
+	spinner.labelText = @"Complete";
+	spinner.detailsLabelText = @"";
+	[spinner hide:YES];
+	
+	[self updateFileList];
 }
 
 - (void)uploaderHaltedFileTransfers:(DBUploader *)uploader {
 	
-	// TODO: display 'error' then stop/clear spinner
-	NSLog(@"Halted");
+	spinner.labelText = @"Error";
+	spinner.detailsLabelText = @"";
+	[spinner hide:YES];
+	
+	[self updateFileList];
 }
 
 @end

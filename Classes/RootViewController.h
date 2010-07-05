@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "DBUploader.h"
+#import "MBProgressHUD.h"
 
 #define SECTION_FILES			0
 #define SECTION_ACTIONS			1
@@ -20,6 +21,7 @@
 	
 	NSString *inputFile;
 	NSMutableArray *files;
+	MBProgressHUD *spinner;
 }
 
 - (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
@@ -31,7 +33,6 @@
 - (void)updateFileList;
 
 - (void)identifyLocalFiles;
-- (void)deleteFileAtPath:(NSURL *)fileUrl;
 - (NSArray *)urlsForCheckedFiles;
 
 - (void)transferFiles;
