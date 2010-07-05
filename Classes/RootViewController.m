@@ -159,12 +159,13 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
 
+	BOOL canEdit = NO;
 	switch (indexPath.section) {
 		case SECTION_FILES:
-			return YES;
+			canEdit = ([files count] == 0) ? NO : YES;
 			break;
 	}
-    return NO;
+    return canEdit;
 }
 
 
