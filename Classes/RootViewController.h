@@ -31,6 +31,7 @@
 - (void)hideSettings;
 
 - (void)updateFileList;
+- (void)uncheckAllFiles;
 
 - (void)identifyLocalFiles;
 - (NSArray *)urlsForCheckedFiles;

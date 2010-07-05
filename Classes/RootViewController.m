@@ -31,7 +31,7 @@
 	}
 	
 	// Get the local files to populate the table view
-	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(identifyLocalFiles) userInfo:nil repeats:NO];
+	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateFileList) userInfo:nil repeats:NO];
 }
 
 
@@ -293,13 +293,27 @@
 
 - (void)updateFileList {
 
+	[self identifyLocalFiles];
+	[self uncheckAllFiles];
 	[self.tableView reloadData];
+}
+
+- (void)uncheckAllFiles {
+	
+	NSInteger count = [self.tableView numberOfRowsInSection:SECTION_FILES];
+	for (int i = 0; i < count; ++i) {
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:SECTION_FILES];
+		UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+		cell.accessoryType = UITableViewCellAccessoryNone;
+	}
 }
 
 #pragma mark -
 #pragma mark File management
 
 - (void)identifyLocalFiles {
+	
+	[files removeAllObjects];
 	
 	NSFileManager *manager = [NSFileManager defaultManager];
 	
@@ -336,9 +350,7 @@
 			NSLog(@"File: %@", [fileUrl path]);
 			[files addObject:fileUrl];
 		}
-	}
-	
-	[self updateFileList];
+	}	
 }
 
 // Return the Urls of the files checked in the table view
@@ -414,6 +426,7 @@
 	spinner.labelText = @"Complete";
 	spinner.detailsLabelText = @"";
 	[spinner hide:YES];
+	// TODO: release spinner?
 	
 	[self updateFileList];
 }
@@ -423,6 +436,7 @@
 	spinner.labelText = @"Error";
 	spinner.detailsLabelText = @"";
 	[spinner hide:YES];
+	// TODO: release spinner?
 	
 	[self updateFileList];
 }
