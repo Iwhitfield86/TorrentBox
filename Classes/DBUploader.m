@@ -7,6 +7,7 @@
 //
 
 #import "DBUploader.h"
+#import "DBConfig.h"
 
 
 @implementation DBUploader
@@ -36,30 +37,52 @@
 	[super dealloc];
 }
 
+- (void)loginWithEmail:(NSString *)email password:(NSString*)password {
+	DBSession *session = [[DBSession alloc] initWithConsumerKey:DB_CONSUMERKEY consumerSecret:DB_CONSUMERSECRET];
+	
+	DBRestClient* client = [[DBRestClient alloc] initWithSession:session];
+	client.delegate = self;
+	
+	// TODO: login with actual arguments
+	[client loginWithEmail:DB_USERNAME password:DB_PASSWORD];
+}
+
 - (void)upload {
 	
+	DBSession *session = [[DBSession alloc] initWithConsumerKey:DB_CONSUMERKEY consumerSecret:DB_CONSUMERSECRET];
+	
+	DBRestClient* client = [[DBRestClient alloc] initWithSession:session];
+	client.delegate = self;
+		
 	if ([delegate respondsToSelector:@selector(uploaderBeganTransferringFiles:)]) 
     {
         [delegate uploaderBeganTransferringFiles:self];
     }
 	
 	enumerator = [files objectEnumerator];
-	[self uploadNextFile];
+	[enumerator retain];
+	[self uploadNextFile:client];
 }
 
-- (void)uploadNextFile {
+- (void)uploadNextFile:(DBRestClient *)client {
 	
 	id object;
 	if (object = [enumerator nextObject]) {
 		NSURL *fileUrl = (NSURL *)object;
+		NSString *fileName = [[fileUrl path] lastPathComponent];
 		if ([delegate respondsToSelector:@selector(uploader:beganTransferringFile:)]) 
 		{
-			[delegate uploader:self beganTransferringFile:[fileUrl absoluteString]];
+			[delegate uploader:self beganTransferringFile:[fileUrl path]];
 		}
 		
-		// TODO: upload the file
+		[client uploadFile:fileName toPath:@"/" fromPath:[fileUrl path]];
 	}
 	else {
+		if ([delegate respondsToSelector:@selector(uploaderHaltedFileTransfers:)]) 
+		{
+			[delegate uploaderHaltedFileTransfers:self];
+		}
+		
 		[enumerator release];
 		enumerator = nil;
 	}
@@ -97,7 +120,7 @@
         [delegate uploader:self successfullyTransferredFile:sourcePath];
     }
 	
-	[self uploadNextFile];
+	[self uploadNextFile:client];
 }
 
 - (void)restClient:(DBRestClient*)client uploadFileFailedWithError:(NSError*)error

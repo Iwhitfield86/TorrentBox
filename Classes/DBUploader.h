@@ -15,7 +15,6 @@
 @interface DBUploader : NSObject <DBRestClientDelegate> {
 
 	id <DBUploaderDelegate> delegate;
-	DBSession *session;
 	NSArray *files;
 	NSEnumerator *enumerator;
 }
@@ -23,8 +22,9 @@
 @property(assign) id delegate;
 
 - (id)initWithFiles:(NSArray *)filesToUpload;
+- (void)loginWithEmail:(NSString *)email password:(NSString*)password;
 - (void)upload;
-- (void)uploadNextFile;
+- (void)uploadNextFile:(DBRestClient *)client;
 
 @end
 
