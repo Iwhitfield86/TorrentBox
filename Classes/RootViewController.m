@@ -32,29 +32,12 @@
 	
 	// Get the local files to populate the table view
 	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateFileList) userInfo:nil repeats:NO];
+	
+	// Handle input files
+	if (inputFile != nil) {
+		[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(transferInputFile) userInfo:nil repeats:NO];
+	}
 }
-
-
-/*
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-*/
-/*
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-}
-*/
-/*
-- (void)viewWillDisappear:(BOOL)animated {
-	[super viewWillDisappear:animated];
-}
-*/
-/*
-- (void)viewDidDisappear:(BOOL)animated {
-	[super viewDidDisappear:animated];
-}
-*/
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -262,6 +245,11 @@
 
 
 - (void)dealloc {
+	
+	if (inputFile != nil) {
+		[inputFile release];
+		inputFile = nil;
+	}
     [super dealloc];
 }
 
@@ -310,6 +298,13 @@
 
 #pragma mark -
 #pragma mark File management
+
+- (void)setInputFileUrl:(NSURL *)url forNewProcess:(BOOL)newProcess {
+	
+	[inputFile release];
+	inputFile = nil;
+	inputFile = [url retain];
+}
 
 - (void)identifyLocalFiles {
 	
@@ -372,6 +367,18 @@
 
 #pragma mark -
 #pragma mark File transfer management
+
+- (void)transferInputFile {
+	
+	if (inputFile != nil) {
+		// TODO: specialize behavior based on settings and whether this is an iOS 4 openURL request
+		
+		NSArray *fileUrls = [NSArray arrayWithObject:inputFile];
+		DBUploader *uploader = [[DBUploader alloc] initWithFiles:fileUrls];
+		uploader.delegate = self;
+		[uploader upload];
+	}
+}
 
 - (void)transferFiles {
 	

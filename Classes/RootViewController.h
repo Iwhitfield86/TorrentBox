@@ -19,7 +19,7 @@
 
 @interface RootViewController : UITableViewController <DBUploaderDelegate>{
 	
-	NSString *inputFile;
+	NSURL *inputFile;
 	NSMutableArray *files;
 	MBProgressHUD *spinner;
 }
@@ -33,9 +33,11 @@
 - (void)updateFileList;
 - (void)uncheckAllFiles;
 
+- (void)setInputFileUrl:(NSURL *)url forNewProcess:(BOOL)newProcess;
 - (void)identifyLocalFiles;
 - (NSArray *)urlsForCheckedFiles;
 
+- (void)transferInputFile;
 - (void)transferFiles;
 
 @end
