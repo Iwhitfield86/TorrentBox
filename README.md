@@ -17,6 +17,10 @@ License
 -------
 TBD
 
+Support
+-------
+[![Click here to lend your support to: TorrentBox and make a donation at www.pledgie.com !](http://www.pledgie.com/campaigns/12339.png?skin_name=chrome "Donate")](http://www.pledgie.com/campaigns/12339)
+
 Contact
 -------
 [Brian Partridge](http://github.com/brianpartridge)
