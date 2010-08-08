@@ -7,7 +7,6 @@
 //
 
 #import "DBUploader.h"
-#import "DBConfig.h"
 
 
 @implementation DBUploader
@@ -37,21 +36,9 @@
 	[super dealloc];
 }
 
-- (void)loginWithEmail:(NSString *)email password:(NSString*)password {
-	DBSession *session = [[DBSession alloc] initWithConsumerKey:DB_CONSUMERKEY consumerSecret:DB_CONSUMERSECRET];
-	
-	DBRestClient* client = [[DBRestClient alloc] initWithSession:session];
-	client.delegate = self;
-	
-	// TODO: login with actual arguments
-	[client loginWithEmail:DB_USERNAME password:DB_PASSWORD];
-}
-
 - (void)upload {
 	
-	DBSession *session = [[DBSession alloc] initWithConsumerKey:DB_CONSUMERKEY consumerSecret:DB_CONSUMERSECRET];
-	
-	DBRestClient* client = [[DBRestClient alloc] initWithSession:session];
+	DBRestClient* client = [[DBRestClient alloc] initWithSession:[DBSession sharedSession]];
 	client.delegate = self;
 		
 	if ([delegate respondsToSelector:@selector(uploaderBeganTransferringFiles:)]) 
@@ -90,26 +77,6 @@
 
 #pragma mark -
 #pragma mark DBRestClientDelegate
-
-- (void)restClientDidLogin:(DBRestClient*)client
-{
-    NSLog(@"PASSED: client login worked.");
-	
-	if ([delegate respondsToSelector:@selector(uploaderDidLogin:)]) 
-    {
-        [delegate uploaderDidLogin:self];
-    }
-}
-
-- (void)restClient:(DBRestClient*)client loginFailedWithError:(NSError*)error
-{
-    NSLog(@"ERROR client login failed %d %@", error.code, error.userInfo);
-	
-	if ([delegate respondsToSelector:@selector(uploader:loginFailedWithError:)]) 
-    {
-        [delegate uploader:self loginFailedWithError:error];
-    }
-}
 
 - (void)restClient:(DBRestClient*)client uploadedFile:(NSString*)sourcePath 
 {

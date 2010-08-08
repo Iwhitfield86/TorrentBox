@@ -17,7 +17,7 @@
 
 #define SKIP_INVISIBLE			YES
 
-@interface RootViewController : UITableViewController <DBUploaderDelegate>{
+@interface RootViewController : UITableViewController <DBUploaderDelegate, DBLoginControllerDelegate>{
 	
 	NSURL *inputFile;
 	NSMutableArray *files;
@@ -27,8 +27,9 @@
 - (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
 - (NSArray *)checkedRowsInTableView:(UITableView *)tableView section:(NSInteger)section;
 
-- (void)showSettings;
-- (void)hideSettings;
+- (void)didPressLogin;
+- (void)showLogin;
+- (void)updateButtons;
 
 - (void)updateFileList;
 - (void)uncheckAllFiles;

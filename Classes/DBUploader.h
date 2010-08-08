@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "DBRestClient.h"
-#import "DBSession.h"
+#import "DropboxSDK.h"
+
 
 @protocol DBUploaderDelegate;
 
@@ -22,7 +22,6 @@
 @property(assign) id delegate;
 
 - (id)initWithFiles:(NSArray *)filesToUpload;
-- (void)loginWithEmail:(NSString *)email password:(NSString*)password;
 - (void)upload;
 - (void)uploadNextFile:(DBRestClient *)client;
 
@@ -31,9 +30,6 @@
 @protocol DBUploaderDelegate <NSObject>
 
 @optional
-- (void)uploaderDidLogin:(DBUploader *)uploader;
-- (void)uploader:(DBUploader *)uploader loginFailedWithError:(NSError *)error;
-
 - (void)uploaderBeganTransferringFiles:(DBUploader *)uploader;
 - (void)uploader:(DBUploader *)uploader beganTransferringFile:(NSString *)file;
 - (void)uploader:(DBUploader *)uploader successfullyTransferredFile:(NSString *)file;

@@ -61,9 +61,6 @@
 		D3A3391C120F5A5A004F8CC3 /* db_link_header@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A338F1120F5A5A004F8CC3 /* db_link_header@2x.png */; };
 		D3A3391D120F5A5A004F8CC3 /* db_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A338F2120F5A5A004F8CC3 /* db_logo.png */; };
 		D3A3391E120F5A5A004F8CC3 /* db_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A338F3120F5A5A004F8CC3 /* db_logo@2x.png */; };
-		D3D9829011D6A03000E14C3D /* gear.png in Resources */ = {isa = PBXBuildFile; fileRef = D3D9828F11D6A03000E14C3D /* gear.png */; };
-		D3D9834B11D6B29C00E14C3D /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3D9834911D6B29C00E14C3D /* SettingsViewController.m */; };
-		D3D9834C11D6B29C00E14C3D /* SettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D3D9834A11D6B29C00E14C3D /* SettingsViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -165,11 +162,7 @@
 		D3A338F1120F5A5A004F8CC3 /* db_link_header@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "db_link_header@2x.png"; sourceTree = "<group>"; };
 		D3A338F2120F5A5A004F8CC3 /* db_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = db_logo.png; sourceTree = "<group>"; };
 		D3A338F3120F5A5A004F8CC3 /* db_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "db_logo@2x.png"; sourceTree = "<group>"; };
-		D3A33922120F5A90004F8CC3 /* DBConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBConfig.h; sourceTree = "<group>"; };
-		D3D9828F11D6A03000E14C3D /* gear.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = gear.png; sourceTree = "<group>"; };
-		D3D9834811D6B29C00E14C3D /* SettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsViewController.h; sourceTree = "<group>"; };
-		D3D9834911D6B29C00E14C3D /* SettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsViewController.m; sourceTree = "<group>"; };
-		D3D9834A11D6B29C00E14C3D /* SettingsViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = SettingsViewController.xib; path = Classes/SettingsViewController.xib; sourceTree = "<group>"; };
+		D3A33922120F5A90004F8CC3 /* DBConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBConfig.h; path = ../DropboxSDK/DBConfig.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -190,12 +183,11 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				D3A33922120F5A90004F8CC3 /* DBConfig.h */,
 				28C286DF0D94DF7D0034E888 /* RootViewController.h */,
 				28C286E00D94DF7D0034E888 /* RootViewController.m */,
 				1D3623240D0F684500981E51 /* TorrentBoxAppDelegate.h */,
 				1D3623250D0F684500981E51 /* TorrentBoxAppDelegate.m */,
-				D3D9834811D6B29C00E14C3D /* SettingsViewController.h */,
-				D3D9834911D6B29C00E14C3D /* SettingsViewController.m */,
 				D37868B811E142820069B42D /* DBUploader.h */,
 				D37868B911E142820069B42D /* DBUploader.m */,
 			);
@@ -236,8 +228,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D3D9828F11D6A03000E14C3D /* gear.png */,
-				D3D9834A11D6B29C00E14C3D /* SettingsViewController.xib */,
 				28F335F01007B36200424DE2 /* RootViewController.xib */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* TorrentBox-Info.plist */,
@@ -269,7 +259,6 @@
 		D3A3389F120F5A5A004F8CC3 /* DropboxSDK */ = {
 			isa = PBXGroup;
 			children = (
-				D3A33922120F5A90004F8CC3 /* DBConfig.h */,
 				D3A338A0120F5A5A004F8CC3 /* DBAccountInfo.h */,
 				D3A338A1120F5A5A004F8CC3 /* DBAccountInfo.m */,
 				D3A338A2120F5A5A004F8CC3 /* DBCreateAccountController.h */,
@@ -437,8 +426,6 @@
 			files = (
 				28AD73600D9D9599002E5188 /* MainWindow.xib in Resources */,
 				28F335F11007B36200424DE2 /* RootViewController.xib in Resources */,
-				D3D9829011D6A03000E14C3D /* gear.png in Resources */,
-				D3D9834C11D6B29C00E14C3D /* SettingsViewController.xib in Resources */,
 				D3A33914120F5A5A004F8CC3 /* db_background.png in Resources */,
 				D3A33915120F5A5A004F8CC3 /* db_create_account.png in Resources */,
 				D3A33916120F5A5A004F8CC3 /* db_create_account@2x.png in Resources */,
@@ -463,7 +450,6 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* TorrentBoxAppDelegate.m in Sources */,
 				28C286E10D94DF7D0034E888 /* RootViewController.m in Sources */,
-				D3D9834B11D6B29C00E14C3D /* SettingsViewController.m in Sources */,
 				D37868BA11E142820069B42D /* DBUploader.m in Sources */,
 				D3786A6F11E16C710069B42D /* MBProgressHUD.m in Sources */,
 				D3A338F4120F5A5A004F8CC3 /* DBAccountInfo.m in Sources */,

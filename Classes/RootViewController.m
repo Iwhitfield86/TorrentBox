@@ -21,10 +21,11 @@
     [super viewDidLoad];
 	
 	self.navigationItem.rightBarButtonItem = self.editButtonItem;
-	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"gear.png"]
+	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Login" 
 																			 style:UIBarButtonItemStylePlain 
 																			target:self 
-																			action:@selector(showSettings)];
+																			action:@selector(didPressLogin)];
+	[self updateButtons];
 	
 	if (!files) {
 		files = [[NSMutableArray alloc] init];
@@ -68,8 +69,11 @@
 			return [files count];
 			break;
 		case SECTION_ACTIONS:
-			// ROW_ACTIONS_TRANSFER
-			return 1;
+			
+			if ([[DBSession sharedSession] isLinked]) {
+				return 1;		// ROW_ACTIONS_TRANSFER
+			}
+			return 0;
 			break;
 	}
     return 0;
@@ -257,22 +261,44 @@
 #pragma mark -
 #pragma mark Settings management
 
-- (void)showSettings {
+- (void)didPressLogin {
 	
-	SettingsViewController *settings = [[SettingsViewController alloc] initWithNibName:@"SettingsViewController" bundle:nil];
-	settings.title = @"Settings";
-	settings.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" 
-																				  style:UIBarButtonItemStyleDone
-																				 target:self 
-																				 action:@selector(hideSettings)];
-	
-	UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:settings];
-	[self presentModalViewController:nav animated:YES];
+    if (![[DBSession sharedSession] isLinked]) {
+		[self showLogin];
+    } else {
+        [[DBSession sharedSession] unlink];
+        
+		[self updateButtons];
+		
+		NSIndexSet *sections = [[NSIndexSet alloc] initWithIndex:SECTION_ACTIONS];
+		[self.tableView reloadSections:sections withRowAnimation:YES];
+    }
 }
 
-- (void)hideSettings {
+- (void)showLogin {
 	
-	[self dismissModalViewControllerAnimated:YES];
+	DBLoginController* controller = [[DBLoginController new] autorelease];
+	controller.delegate = self;
+	[controller presentFromController:self];
+}
+
+- (void)updateButtons {
+	
+	NSString* title = [[DBSession sharedSession] isLinked] ? @"Logout" : @"Login";
+    [self.navigationItem.leftBarButtonItem setTitle:title];
+}
+
+#pragma mark DBLoginControllerDelegate methods
+
+- (void)loginControllerDidLogin:(DBLoginController*)controller {
+    [self updateButtons];
+
+	NSIndexSet *sections = [[NSIndexSet alloc] initWithIndex:SECTION_ACTIONS];
+	[self.tableView reloadSections:sections withRowAnimation:YES];
+}
+
+- (void)loginControllerDidCancel:(DBLoginController*)controller {
+	
 }
 
 

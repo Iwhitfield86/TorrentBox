@@ -8,6 +8,7 @@
 
 #import "TorrentBoxAppDelegate.h"
 #import "RootViewController.h"
+#import "DBConfig.h"
 
 
 @implementation TorrentBoxAppDelegate
@@ -23,6 +24,10 @@
 	
 	[window addSubview:[navigationController view]];
     [window makeKeyAndVisible];
+	
+	DBSession* session = [[DBSession alloc] initWithConsumerKey:DB_CONSUMERKEY consumerSecret:DB_CONSUMERSECRET];
+	[DBSession setSharedSession:session];
+    [session release];
 	
 	NSURL *inputFileUrl = [launchOptions objectForKey:UIApplicationLaunchOptionsURLKey];
 	if (inputFileUrl != nil) {
