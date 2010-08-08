@@ -7,8 +7,11 @@
 //
 
 
+#import "DBSession.h"
+
 @protocol DBRestClientDelegate;
-@class DBSession;
+@class DBAccountInfo;
+@class DBMetadata;
 
 
 // Error codes in the dropbox.com domain represent the HTTP status code if less than 1000
@@ -20,14 +23,15 @@ enum {
 
 @interface DBRestClient : NSObject {
     DBSession* session;
+    NSString* root;
     NSMutableSet* requests;
     id<DBRestClientDelegate> delegate;
-    NSString *root;
 }
 
 - (id)initWithSession:(DBSession*)session;
 
-- (id)initWithSession:(DBSession*)aSession andRoot:(NSString *)theRoot;
+/* New developers should not use this method, and instead just use initWithSession: */
+- (id)initWithSession:(DBSession *)session root:(NSString*)root;
 
 /* Logs in as the user with the given email/password and stores the OAuth tokens on the session 
    object */
@@ -58,7 +62,8 @@ enum {
 
 - (void)loadAccountInfo;
 
-- (void)createAccount:(NSString *)email password:(NSString *)password firstName:(NSString *)firstName lastName:(NSString *)lastName;
+- (void)createAccount:(NSString *)email password:(NSString *)password firstName:(NSString *)firstName 
+        lastName:(NSString *)lastName;
 
 @property (nonatomic, assign) id<DBRestClientDelegate> delegate;
 
@@ -77,14 +82,18 @@ enum {
 - (void)restClientDidLogin:(DBRestClient*)client;
 - (void)restClient:(DBRestClient*)client loginFailedWithError:(NSError*)error;
 
-- (void)restClient:(DBRestClient*)client loadedMetadata:(NSDictionary*)metadata;
+- (void)restClient:(DBRestClient*)client loadedMetadata:(DBMetadata*)metadata;
+- (void)restClient:(DBRestClient*)client metadataUnchangedAtPath:(NSString*)path;
 - (void)restClient:(DBRestClient*)client loadMetadataFailedWithError:(NSError*)error; 
 // [error userInfo] contains the root and path of the call that failed
 
-- (void)restClient:(DBRestClient*)client loadedAccountInfo:(NSDictionary*)metadata;
+- (void)restClient:(DBRestClient*)client loadedAccountInfo:(DBAccountInfo*)info;
 - (void)restClient:(DBRestClient*)client loadAccountInfoFailedWithError:(NSError*)error; 
 
 - (void)restClient:(DBRestClient*)client loadedFile:(NSString*)destPath;
+// Implement the following callback instead of the previous if you care about the value of the
+// Content-Type HTTP header. Only one will be called per successful response.
+- (void)restClient:(DBRestClient*)client loadedFile:(NSString*)destPath contentType:(NSString*)contentType;
 - (void)restClient:(DBRestClient*)client loadProgress:(CGFloat)progress forFile:(NSString*)destPath;
 - (void)restClient:(DBRestClient*)client loadFileFailedWithError:(NSError*)error;
 // [error userInfo] contains the destinationPath
@@ -97,7 +106,7 @@ enum {
 - (void)restClient:(DBRestClient*)client uploadFileFailedWithError:(NSError*)error;
 // [error userInfo] contains the sourcePath
 
-- (void)restClient:(DBRestClient*)client createdFolder:(NSDictionary*)folder;
+- (void)restClient:(DBRestClient*)client createdFolder:(DBMetadata*)folder;
 // Folder is the metadata for the newly created folder
 - (void)restClient:(DBRestClient*)client createFolderFailedWithError:(NSError*)error;
 // [error userInfo] contains the root and path

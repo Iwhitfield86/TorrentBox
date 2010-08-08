@@ -7,13 +7,13 @@
 //
 
 #import "DBRestClient.h"
+#import "DBAccountInfo.h"
+#import "DBMetadata.h"
 #import "DBRequest.h"
-#import "DBSession.h"
 #import "MPOAuthURLRequest.h"
 #import "MPURLRequestParameter.h"
 #import "MPOAuthSignatureParameter.h"
 #import "NSString+URLEscapingAdditions.h"
-#include <assert.h>
 
 
 @interface DBRestClient ()
@@ -30,51 +30,16 @@
 @end
 
 
-NSError *convertRequestToError(DBRequest *request)
-{
-    NSError *error = nil;
-
-    if (request.error || request.statusCode != 200) {
-        if (request.error) {
-            error = [NSError errorWithDomain:request.error.domain 
-                                code:request.error.code userInfo:(NSDictionary*)request.userInfo];
-        } else {
-            NSDictionary* userInfo = nil;
-            // To get error userInfo, first try and make sense of the response as JSON, if that
-            // fails then send back the string as an error message
-            NSString* resultString = [request resultString];
-            if ([resultString length] > 0) {
-                @try {
-                    NSObject* resultJSON = [request resultJSON];
-                    if ([resultJSON isKindOfClass:[NSDictionary class]]) {
-                        userInfo = (NSDictionary*)resultJSON;
-                    }
-                } @catch (NSException* e) {
-                    userInfo = [NSDictionary dictionaryWithObject:resultString forKey:@"errorMessage"];
-                }
-            }
-            error = [NSError errorWithDomain:@"dropbox.com" code:request.statusCode userInfo:userInfo];
-        }
-    }
-    
-    return error;
-}
-
-
-
 @implementation DBRestClient
 
-- (id)initWithSession:(DBSession*)aSession
-{
-    return [self initWithSession:aSession andRoot:@"dropbox"];
+- (id)initWithSession:(DBSession*)aSession {
+    return [self initWithSession:aSession root:@"dropbox"];
 }
 
-- (id)initWithSession:(DBSession*)aSession andRoot:(NSString *)theRoot
-{
-    root = theRoot;
-
+- (id)initWithSession:(DBSession*)aSession root:(NSString*)aRoot {
     if ((self = [super init])) {
         session = [aSession retain];
+        root = [aRoot retain];
         requests = [[NSMutableSet alloc] init];
     }
     return self;
@@ -82,8 +47,12 @@ NSError *convertRequestToError(DBRequest *request)
 
 
 - (void)dealloc {
+    for (DBRequest* request in requests) {
+        [request cancel];
+    }
     [requests release];
     [session release];
+    [root release];
     [super dealloc];
 }
 
@@ -111,11 +80,9 @@ NSError *convertRequestToError(DBRequest *request)
 
 
 - (void)requestDidLogin:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:loginFailedWithError:)]) {
-            [delegate restClient:self loginFailedWithError:error];
+            [delegate restClient:self loginFailedWithError:request.error];
         }
     } else {
         NSDictionary* result = (NSDictionary*)request.resultJSON;
@@ -129,7 +96,6 @@ NSError *convertRequestToError(DBRequest *request)
 
     [requests removeObject:request];
 }
-
 
 
 
@@ -162,11 +128,14 @@ NSError *convertRequestToError(DBRequest *request)
 
 - (void)requestDidLoadMetadata:(DBRequest*)request
 {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.statusCode == 304) {
+        if ([delegate respondsToSelector:@selector(restClient:metadataUnchangedAtPath:)]) {
+            NSString* path = [request.userInfo objectForKey:@"path"];
+            [delegate restClient:self metadataUnchangedAtPath:path];
+        }
+    } else if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:loadMetadataFailedWithError:)]) {
-            [delegate restClient:self loadMetadataFailedWithError:error];
+            [delegate restClient:self loadMetadataFailedWithError:request.error];
         }
     } else {
         [self performSelectorInBackground:@selector(parseMetadataWithRequest:) withObject:request];
@@ -180,13 +149,14 @@ NSError *convertRequestToError(DBRequest *request)
     NSAutoreleasePool* pool = [NSAutoreleasePool new];
     
     NSDictionary* result = (NSDictionary*)[request resultJSON];
-    [self performSelectorOnMainThread:@selector(didParseMetadata:) withObject:result waitUntilDone:NO];
+    DBMetadata* metadata = [[[DBMetadata alloc] initWithDictionary:result] autorelease];
+    [self performSelectorOnMainThread:@selector(didParseMetadata:) withObject:metadata waitUntilDone:NO];
     
     [pool drain];
 }
 
 
-- (void)didParseMetadata:(NSDictionary*)metadata {
+- (void)didParseMetadata:(DBMetadata*)metadata {
     if ([delegate respondsToSelector:@selector(restClient:loadedMetadata:)]) {
         [delegate restClient:self loadedMetadata:metadata];
     }
@@ -222,15 +192,16 @@ NSError *convertRequestToError(DBRequest *request)
 
 
 - (void)requestDidLoadFile:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:loadFileFailedWithError:)]) {
-            [delegate restClient:self loadFileFailedWithError:error];
+            [delegate restClient:self loadFileFailedWithError:request.error];
         }
     } else {
         if ([delegate respondsToSelector:@selector(restClient:loadedFile:)]) {
             [delegate restClient:self loadedFile:request.resultFilename];
+        } else if ([delegate respondsToSelector:@selector(restClient:loadedFile:contentType:)]) {
+            NSString* contentType = [[request.response allHeaderFields] objectForKey:@"Content-Type"];
+            [delegate restClient:self loadedFile:request.resultFilename contentType:contentType];
         }
     }
 
@@ -268,11 +239,9 @@ NSError *convertRequestToError(DBRequest *request)
 
 - (void)requestDidLoadThumbnail:(DBRequest*)request
 {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:loadThumbnailFailedWithError:)]) {
-            [delegate restClient:self loadThumbnailFailedWithError:error];
+            [delegate restClient:self loadThumbnailFailedWithError:request.error];
         }
     } else {
         if ([delegate respondsToSelector:@selector(restClient:loadedThumbnail:)]) {
@@ -415,19 +384,23 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
     NSURL* baseUrl = [NSURL URLWithString:urlString];
     NSArray* params = [session.credentialStore oauthParameters];
 
-    NSString *signatureText = createFakeSignature(session, params, filename, baseUrl);
+    NSString *escapedFilename = [filename stringByReplacingOccurrencesOfString:@";" withString:@"-"];
+
+    NSString *signatureText = createFakeSignature(session, params, escapedFilename, baseUrl);
 
     NSMutableURLRequest *urlRequest = createRealRequest(session, params, urlString, signatureText);
    
-    if(addFileUploadToRequest(urlRequest, filename, sourcePath)) {
+    if(addFileUploadToRequest(urlRequest, escapedFilename, sourcePath)) {
         DBRequest* request = 
             [[[DBRequest alloc] 
               initWithURLRequest:urlRequest andInformTarget:self selector:@selector(requestDidUploadFile:)]
              autorelease];
         request.uploadProgressSelector = @selector(requestUploadProgress:);
+		NSString* dropboxPath = [path stringByAppendingPathComponent:filename];
         request.userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
                 root, @"root", 
-                path, @"path", 
+                path, @"path",
+				dropboxPath, @"dropboxPath",
                 sourcePath, @"sourcePath", nil];
         [requests addObject:request];
     } else {
@@ -450,16 +423,14 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 
 - (void)requestDidUploadFile:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:uploadFileFailedWithError:)]) {
-            [delegate restClient:self uploadFileFailedWithError:error];
+            [delegate restClient:self uploadFileFailedWithError:request.error];
         }
     } else {
-        NSString* filename = [(NSDictionary*)request.userInfo objectForKey:@"sourcePath"];
+        NSString* sourcePath = [(NSDictionary*)request.userInfo objectForKey:@"sourcePath"];
         if ([delegate respondsToSelector:@selector(restClient:uploadedFile:)]) {
-            [delegate restClient:self uploadedFile:filename];
+            [delegate restClient:self uploadedFile:sourcePath];
         }
     }
 
@@ -476,7 +447,7 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
             to_path, @"to_path", nil];
             
     NSMutableURLRequest* urlRequest = 
-        [self requestWithProtocol:@"http" host:kDBDropboxAPIHost path:@"/fileops/copy"
+        [self requestWithProtocol:@"http" host:kDBDropboxAPIHost path:@"/fileops/move"
                 parameters:params method:@"POST"];
 
     DBRequest* request = 
@@ -491,11 +462,9 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 
 - (void)requestDidMovePath:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:movePathFailedWithError:)]) {
-            [delegate restClient:self movePathFailedWithError:error];
+            [delegate restClient:self movePathFailedWithError:request.error];
         }
     } else {
         NSDictionary *params = (NSDictionary *)request.userInfo;
@@ -533,11 +502,9 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 
 - (void)requestDidCopyPath:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:copyPathFailedWithError:)]) {
-            [delegate restClient:self copyPathFailedWithError:error];
+            [delegate restClient:self copyPathFailedWithError:request.error];
         }
     } else {
         NSDictionary *params = (NSDictionary *)request.userInfo;
@@ -567,22 +534,21 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
           initWithURLRequest:urlRequest andInformTarget:self selector:@selector(requestDidDeletePath:)]
          autorelease];
 
-    request.userInfo = path;
+    request.userInfo = params;
     [requests addObject:request];
 }
 
 
 
 - (void)requestDidDeletePath:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:deletePathFailedWithError:)]) {
-            [delegate restClient:self deletePathFailedWithError:error];
+            [delegate restClient:self deletePathFailedWithError:request.error];
         }
     } else {
         if ([delegate respondsToSelector:@selector(restClient:deletedPath:)]) {
-            [delegate restClient:self deletedPath:(NSString *)request.userInfo];
+            NSString* path = [request.userInfo objectForKey:@"path"];
+            [delegate restClient:self deletedPath:path];
         }
     }
 
@@ -613,16 +579,15 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 
 - (void)requestDidCreateDirectory:(DBRequest*)request {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:createFolderFailedWithError:)]) {
-            [delegate restClient:self createFolderFailedWithError:error];
+            [delegate restClient:self createFolderFailedWithError:request.error];
         }
     } else {
         NSDictionary* result = (NSDictionary*)[request resultJSON];
+        DBMetadata* metadata = [[[DBMetadata alloc] initWithDictionary:result] autorelease];
         if ([delegate respondsToSelector:@selector(restClient:createdFolder:)]) {
-            [delegate restClient:self createdFolder:result];
+            [delegate restClient:self createdFolder:metadata];
         }
     }
 
@@ -649,16 +614,15 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 - (void)requestDidLoadAccountInfo:(DBRequest*)request
 {
-    NSError *error = convertRequestToError(request);
-
-    if (error) {
+    if (request.error) {
         if ([delegate respondsToSelector:@selector(restClient:loadAccountInfoFailedWithError:)]) {
-            [delegate restClient:self loadAccountInfoFailedWithError:error];
+            [delegate restClient:self loadAccountInfoFailedWithError:request.error];
         }
     } else {
         NSDictionary* result = (NSDictionary*)[request resultJSON];
+        DBAccountInfo* accountInfo = [[[DBAccountInfo alloc] initWithDictionary:result] autorelease];
         if ([delegate respondsToSelector:@selector(restClient:loadedAccountInfo:)]) {
-            [delegate restClient:self loadedAccountInfo:result];
+            [delegate restClient:self loadedAccountInfo:accountInfo];
         }
     }
 
@@ -690,11 +654,9 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 - (void)requestDidCreateAccount:(DBRequest *)request
 {
-    NSError *error = convertRequestToError(request);
-
-    if(error) {
+    if(request.error) {
         if([delegate respondsToSelector:@selector(restClient:createAccountFailedWithError:)]) {
-            [delegate restClient:self createAccountFailedWithError:error];
+            [delegate restClient:self createAccountFailedWithError:request.error];
         }
     } else {
         if ([delegate respondsToSelector:@selector(restClientCreatedAccount:)]) {
@@ -744,14 +706,14 @@ BOOL addFileUploadToRequest(NSMutableURLRequest *urlRequest, NSString *filename,
 
 - (NSString*)escapePath:(NSString*)path {
     CFStringEncoding encoding = CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding);
-	NSString *escapedPath = 
+    NSString *escapedPath = 
         (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                             (CFStringRef)path,
-															NULL,
-															(CFStringRef)@":?=,!$&'()*+;[]@#",
-															encoding);
-	
-	return [escapedPath autorelease];
+                                                            NULL,
+                                                            (CFStringRef)@":?=,!$&'()*+;[]@#",
+                                                            encoding);
+    
+    return [escapedPath autorelease];
 
 
 }

@@ -106,6 +106,7 @@ static NSString* kDBDropboxSavedCredentialsKey = @"kDBDropboxSavedCredentialsKey
     
     [[NSUserDefaults standardUserDefaults] 
             setObject:credentials forKey:kDBDropboxSavedCredentialsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 - (void)clearSavedCredentials {
