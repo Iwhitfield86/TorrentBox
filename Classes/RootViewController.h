@@ -28,7 +28,6 @@
 - (NSArray *)checkedRowsInTableView:(UITableView *)tableView section:(NSInteger)section;
 
 - (void)didPressLogin;
-- (void)showLogin;
 - (void)updateButtons;
 
 - (void)updateFileList;

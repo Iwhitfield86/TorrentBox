@@ -7,8 +7,6 @@
 //
 
 #import "RootViewController.h"
-#import "SettingsViewController.h"
-
 
 @implementation RootViewController
 
@@ -62,16 +60,21 @@
 	
 	switch (section) {
 		case SECTION_FILES:
-			if ([files count] == 0) {
-				// 'No files found.' row
-				return 1;
-			}
 			return [files count];
 			break;
 		case SECTION_ACTIONS:
-			
-			if ([[DBSession sharedSession] isLinked]) {
-				return 1;		// ROW_ACTIONS_TRANSFER
+			// This is more complicated then it should be:
+			// The transfers button should only be visible if there is a Dropbox session...
+			if ([[DBSession sharedSession] isLinked])
+			{
+				// ... and there are files.
+				if ([files count]) {
+					return 1;		// ROW_ACTIONS_TRANSFER
+				}
+				// However, if the table is editing and the last file is being removed, we must still show the button or the tableview throws an exception.
+				else if (tableView.editing) {
+					return 1;		// ROW_ACTIONS_TRANSFER
+				}
 			}
 			return 0;
 			break;
@@ -84,7 +87,14 @@
 	
 	switch (section) {
 		case SECTION_FILES:
-			return @"Files";
+			if ([files count])
+			{
+				return @"Files";
+			}
+			else {
+				return @"No files found";
+			}
+
 	}
 	return @"";
 }
@@ -93,7 +103,11 @@
 	
 	switch (section) {
 		case SECTION_FILES:
-			return @"Select files to transfer.";
+			if ([files count]) {
+				return @"Select files to transfer.";
+			}
+
+			break;
 	}
 	return @"";
 }
@@ -107,17 +121,10 @@
 	// Configure the cell.
 	switch (indexPath.section) {
 		case SECTION_FILES:
-			if ([files count] == 0) {
-				cell = [self cellFromTableView:tableView WithIdentifier:@"CenteredCell"];
-				cell.textLabel.textAlignment = UITextAlignmentCenter;
-				cell.textLabel.text = @"No files found.";
-			}
-			else {
-				cell = [self cellFromTableView:tableView WithIdentifier:@"CheckableCell"];
-				NSURL *fileUrl = [files objectAtIndex:[indexPath row]];
-				NSString *fileName = [[fileUrl path] lastPathComponent];
-				cell.textLabel.text = fileName;
-			}
+			cell = [self cellFromTableView:tableView WithIdentifier:@"CheckableCell"];
+			NSURL *fileUrl = [files objectAtIndex:[indexPath row]];
+			NSString *fileName = [[fileUrl path] lastPathComponent];
+			cell.textLabel.text = fileName;
 			break;
 		case SECTION_ACTIONS:
 			cell = [self cellFromTableView:tableView WithIdentifier:@"CenteredCell"];
@@ -145,14 +152,13 @@
 
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-
-	BOOL canEdit = NO;
+	
 	switch (indexPath.section) {
 		case SECTION_FILES:
-			canEdit = ([files count] == 0) ? NO : YES;
+			return YES;
 			break;
 	}
-    return canEdit;
+    return NO;
 }
 
 
@@ -178,6 +184,9 @@
 				
 				// Remove the row from the table
 				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
+				
+				// Reload the table to update headers, footers, and action cells
+				[self updateFileList];
 				break;
 		}
     }
@@ -194,10 +203,6 @@
 	switch ([indexPath section]) {
 		case SECTION_FILES:
 			[tableView deselectRowAtIndexPath:indexPath animated:YES];
-			
-			if ([files count] == 0) {
-				break;
-			}
 			
 			if (selectedCell.accessoryType == UITableViewCellAccessoryNone) {
 				selectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -264,23 +269,18 @@
 - (void)didPressLogin {
 	
     if (![[DBSession sharedSession] isLinked]) {
-		[self showLogin];
+		DBLoginController* controller = [[DBLoginController new] autorelease];
+		controller.delegate = self;
+		[controller presentFromController:self];
     } else {
         [[DBSession sharedSession] unlink];
-        
 		[self updateButtons];
-		
 		NSIndexSet *sections = [[NSIndexSet alloc] initWithIndex:SECTION_ACTIONS];
 		[self.tableView reloadSections:sections withRowAnimation:YES];
+		[sections release];
     }
 }
 
-- (void)showLogin {
-	
-	DBLoginController* controller = [[DBLoginController new] autorelease];
-	controller.delegate = self;
-	[controller presentFromController:self];
-}
 
 - (void)updateButtons {
 	
@@ -310,6 +310,16 @@
 	[self identifyLocalFiles];
 	[self uncheckAllFiles];
 	[self.tableView reloadData];
+}
+
+- (void)checkAllFiles {
+	
+	NSInteger count = [self.tableView numberOfRowsInSection:SECTION_FILES];
+	for (int i = 0; i < count; ++i) {
+		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:SECTION_FILES];
+		UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+	}
 }
 
 - (void)uncheckAllFiles {
