@@ -106,6 +106,10 @@
 			if ([files count]) {
 				return @"Select files to transfer.";
 			}
+			else {
+				return @"Go find some .torrents in Safari.";
+			}
+
 
 			break;
 	}
