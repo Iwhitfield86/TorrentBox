@@ -33,8 +33,12 @@
 	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateFileList) userInfo:nil repeats:NO];
 	
 	// Handle input files
-	if (inputFile != nil) {
-		[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(transferInputFile) userInfo:nil repeats:NO];
+	if (inputFile != nil ) {
+		// The file should only be automatically transferred if there is a Dropbox session.
+		if ([[DBSession sharedSession] isLinked])
+		{
+			[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(transferInputFile) userInfo:nil repeats:NO];
+		}
 	}
 }
 
