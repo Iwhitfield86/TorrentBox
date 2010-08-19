@@ -397,33 +397,61 @@
 	if (documentPath == nil) { return; }
 	NSLog(@"Document directory: %@", documentPath);
 	
-	if (![manager fileExistsAtPath:documentPath]) { return; }
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kIndexDocumentsDirectory]) {
+		[self identifyFilesInDirectory:documentPath];
+	}
 	
 	NSString *inboxPath = [documentPath stringByAppendingPathComponent:@"Inbox"];
 	if (inboxPath == nil) { return; }
 	NSLog(@"Inbox directory: %@", inboxPath);
 	
-	if (![manager fileExistsAtPath:inboxPath]) { return; }
+	[self identifyFilesInDirectory:inboxPath];
+}
+
+- (void)identifyFilesInDirectory:(NSString *)directoryPath {
 	
+	NSFileManager *manager = [NSFileManager defaultManager];
+	BOOL bIsDirectory = NO;
+	
+	// Abort if directoryPath doesn't exist or it doesn't point to a directory
+	if (![manager fileExistsAtPath:directoryPath isDirectory:&bIsDirectory] || 
+		!bIsDirectory) { 
+		return; 
+	}
+	
+	// Retrieve directory contents
 	NSError *error = nil;
-	NSArray *inboxFiles = [manager contentsOfDirectoryAtPath:inboxPath error:&error];
-	if (inboxFiles == nil || error != nil) {
+	NSArray *contents = [manager contentsOfDirectoryAtPath:directoryPath error:&error];
+	if (contents == nil || error != nil) {
 		NSLog(@"Error: %@", [error description]);
 	}
 	
-	for (int i=0; i < [inboxFiles count]; ++i) {
-		NSString *fileName = [inboxFiles objectAtIndex:i];
+	for (int i=0; i < [contents count]; ++i) {
 		
-		if (SKIP_INVISIBLE && [fileName hasPrefix:@"."]) {
+		NSString *fileName = [contents objectAtIndex:i];
+		if (fileName == nil) {
 			continue;
 		}
 		
-		if (fileName != nil) {
-			NSURL *fileUrl = [NSURL fileURLWithPath:[inboxPath stringByAppendingPathComponent:fileName]];
-			NSLog(@"File: %@", [fileUrl path]);
-			[files addObject:fileUrl];
+		// Check user options and skip inivisibles
+		if ([fileName hasPrefix:@"."] &&
+			![[NSUserDefaults standardUserDefaults] boolForKey:kIndexInvisibleFiles]) {
+			continue;
 		}
-	}	
+		
+		NSString *filePath = [directoryPath stringByAppendingPathComponent:fileName];
+
+		// Check that there is a file at filePath and that it is not a directory
+		if (![manager fileExistsAtPath:filePath isDirectory:&bIsDirectory] || 
+			bIsDirectory) {
+			continue;
+		}
+	
+		// Finally, add fileUrl to the index
+		NSURL *fileUrl = [NSURL fileURLWithPath:filePath];
+		NSLog(@"File: %@", [fileUrl path]);
+		[files addObject:fileUrl];
+	}
 }
 
 // Return the Urls of the files checked in the table view

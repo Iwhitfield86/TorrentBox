@@ -39,6 +39,7 @@
 
 - (void)setInputFileUrl:(NSURL *)url forNewProcess:(BOOL)newProcess;
 - (void)identifyLocalFiles;
+- (void)identifyFilesInDirectory:(NSString *)directoryPath;
 - (NSArray *)urlsForCheckedFiles;
 
 - (void)transferInputFile;
