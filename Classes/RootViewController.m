@@ -3,7 +3,7 @@
 //  TorrentBox
 //
 //  Created by Brian Partridge on 6/26/10.
-//  Copyright __MyCompanyName__ 2010. All rights reserved.
+//  Copyright Brian Partridge 2010. All rights reserved.
 //
 
 #import "RootViewController.h"
@@ -18,6 +18,9 @@
 - (void)viewDidLoad {
 	
     [super viewDidLoad];
+	
+	// Log user current options
+	NSLog(@"%@", [[NSUserDefaults standardUserDefaults] dictionaryRepresentation]);
 	
 	// Setup navbar buttons
 	self.navigationItem.rightBarButtonItem = self.editButtonItem;
