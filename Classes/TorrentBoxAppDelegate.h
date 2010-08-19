@@ -12,6 +12,7 @@
 static NSString* kAutoTransferInputFilesKey = @"kAutoTransferInputFilesKey";
 static NSString* kDeleteTransferedFiles = @"kDeleteTransferedFiles";
 static NSString* kIndexDocumentsDirectory = @"kIndexDocumentsDirectory";
+static NSString* kIndexInvisibleFiles = @"kIndexInvisibleFiles";
 
 @interface TorrentBoxAppDelegate : NSObject <UIApplicationDelegate> {
     

@@ -30,6 +30,7 @@
 	[appDefaults setValue:[NSNumber numberWithBool:YES] forKey:kAutoTransferInputFilesKey];
 	[appDefaults setValue:[NSNumber numberWithBool:YES] forKey:kDeleteTransferedFiles];
 	[appDefaults setValue:[NSNumber numberWithBool:NO] forKey:kIndexDocumentsDirectory];
+	[appDefaults setValue:[NSNumber numberWithBool:NO] forKey:kIndexInvisibleFiles];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:appDefaults];							 
 	
 	// Prepare the Dropbox session to identify as TorrentBox
