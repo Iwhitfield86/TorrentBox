@@ -7,6 +7,7 @@
 //
 
 #import "RootViewController.h"
+#import "TorrentBoxAppDelegate.h"
 
 @implementation RootViewController
 
@@ -18,24 +19,27 @@
 	
     [super viewDidLoad];
 	
+	// Setup navbar buttons
 	self.navigationItem.rightBarButtonItem = self.editButtonItem;
 	self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Login" 
 																			 style:UIBarButtonItemStylePlain 
 																			target:self 
-																			action:@selector(didPressLogin)];
-	[self updateButtons];
+																			action:@selector(didPressLoginButton)];
+	[self updateLoginButton];
 	
+	// Lazily initialize the files array
 	if (!files) {
 		files = [[NSMutableArray alloc] init];
 	}
 	
-	// Get the local files to populate the table view
-	[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(updateFileList) userInfo:nil repeats:NO];
+	// Populate the view
+	[self performSelector:@selector(populateView) onThread:[NSThread mainThread] withObject:nil waitUntilDone:NO];
 	
 	// Handle input files
 	if (inputFile != nil ) {
 		// The file should only be automatically transferred if there is a Dropbox session.
-		if ([[DBSession sharedSession] isLinked])
+		if ([[NSUserDefaults standardUserDefaults] boolForKey:kAutoTransferInputFilesKey] && 
+			[[DBSession sharedSession] isLinked])
 		{
 			[NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(transferInputFile) userInfo:nil repeats:NO];
 		}
@@ -54,9 +58,11 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 
-	// SECTION_FILES
-	// SECTION_ACTIONS
-    return 2;
+	int count = 1;	// SECTION_FILES
+	if (actionsShown) {
+		count++;	// SECTION_ACTIONS
+	}
+    return count;
 }
 
 
@@ -67,20 +73,7 @@
 			return [files count];
 			break;
 		case SECTION_ACTIONS:
-			// This is more complicated then it should be:
-			// The transfers button should only be visible if there is a Dropbox session...
-			if ([[DBSession sharedSession] isLinked])
-			{
-				// ... and there are files.
-				if ([files count]) {
-					return 1;		// ROW_ACTIONS_TRANSFER
-				}
-				// However, if the table is editing and the last file is being removed, we must still show the button or the tableview throws an exception.
-				else if (tableView.editing) {
-					return 1;		// ROW_ACTIONS_TRANSFER
-				}
-			}
-			return 0;
+			return 1;		// ROW_ACTIONS_TRANSFER
 			break;
 	}
     return 0;
@@ -91,8 +84,7 @@
 	
 	switch (section) {
 		case SECTION_FILES:
-			if ([files count])
-			{
+			if ([files count]) {
 				return @"Files";
 			}
 			else {
@@ -113,15 +105,12 @@
 			else {
 				return @"Go find some .torrents in Safari.";
 			}
-
-
 			break;
 	}
 	return @"";
 }
 
 
-// Customize the appearance of table view cells.
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
 	UITableViewCell *cell = nil;
@@ -170,31 +159,13 @@
 }
 
 
-// Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
 	
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source.
-		switch ([indexPath section]) {
+		switch (indexPath.section) {
 			case SECTION_FILES:
-				;
-				NSURL *fileUrl = [files objectAtIndex:indexPath.row];
-				
-				// Delete the actual file
-				NSError *error = nil;
-				if (![[NSFileManager defaultManager] removeItemAtPath:[fileUrl path] error:&error]) {
-					NSLog(@"Error deleting %@: %@", [fileUrl path], error.description);
-					break;
-				}
-				
-				// Remove the Url from the file list
-				[files removeObjectAtIndex:indexPath.row];
-				
-				// Remove the row from the table
-				[tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-				
-				// Reload the table to update headers, footers, and action cells
-				[self updateFileList];
+				[self deleteFileAtIndex:indexPath.row];
 				break;
 		}
     }
@@ -229,7 +200,7 @@
 
 
 // Iterate the cells in the table view to find the ones that have checkmarks
-- (NSArray *)checkedRowsInTableView:(UITableView *)tableView section:(NSInteger)section {
+- (NSArray *)checkedCellsInTableView:(UITableView *)tableView section:(NSInteger)section {
 	
 	NSMutableArray *checkedCellIndexPaths = [[NSMutableArray alloc] init];
 	
@@ -272,9 +243,9 @@
 
 
 #pragma mark -
-#pragma mark Settings management
+#pragma mark Session management
 
-- (void)didPressLogin {
+- (void)didPressLoginButton {
 	
     if (![[DBSession sharedSession] isLinked]) {
 		DBLoginController* controller = [[DBLoginController new] autorelease];
@@ -282,27 +253,18 @@
 		[controller presentFromController:self];
     } else {
         [[DBSession sharedSession] unlink];
-		[self updateButtons];
-		NSIndexSet *sections = [[NSIndexSet alloc] initWithIndex:SECTION_ACTIONS];
-		[self.tableView reloadSections:sections withRowAnimation:YES];
-		[sections release];
+		[self updateLoginButton];
+		[self updateActionsSection];
     }
 }
 
 
-- (void)updateButtons {
-	
-	NSString* title = [[DBSession sharedSession] isLinked] ? @"Logout" : @"Login";
-    [self.navigationItem.leftBarButtonItem setTitle:title];
-}
-
+#pragma mark -
 #pragma mark DBLoginControllerDelegate methods
 
 - (void)loginControllerDidLogin:(DBLoginController*)controller {
-    [self updateButtons];
-
-	NSIndexSet *sections = [[NSIndexSet alloc] initWithIndex:SECTION_ACTIONS];
-	[self.tableView reloadSections:sections withRowAnimation:YES];
+    [self updateLoginButton];
+	[self updateActionsSection];
 }
 
 - (void)loginControllerDidCancel:(DBLoginController*)controller {
@@ -313,30 +275,99 @@
 #pragma mark -
 #pragma mark UI management
 
-- (void)updateFileList {
+- (void)populateView {
 
+	// Index the local files
 	[self identifyLocalFiles];
-	[self uncheckAllFiles];
-	[self.tableView reloadData];
+		
+	// Only reload the files section if there are files.
+	// Rows should animate in from the left.
+	if ([files count]) {
+		[self.tableView reloadSections:[NSIndexSet indexSetWithIndex:SECTION_FILES] 
+					  withRowAnimation:UITableViewRowAnimationRight];
+	}
+	
+	// Since SECTION_FILES may have changed, update SECTION_ACTIONS
+	[self updateActionsSection];
 }
 
-- (void)checkAllFiles {
+
+- (void)updateLoginButton {
 	
-	NSInteger count = [self.tableView numberOfRowsInSection:SECTION_FILES];
-	for (int i = 0; i < count; ++i) {
-		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:SECTION_FILES];
-		UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-		cell.accessoryType = UITableViewCellAccessoryCheckmark;
+	NSString* title = [[DBSession sharedSession] isLinked] ? @"Logout" : @"Login";
+    [self.navigationItem.leftBarButtonItem setTitle:title];
+}
+
+
+// SECTION_ACTIONS is shown dynamically based on several conditions.
+// This method add or removes the section based on those conditions.
+- (void)updateActionsSection {
+	
+	BOOL shouldShow = [self shouldShowActionsSection];
+	if (actionsShown && !shouldShow) {
+		
+		[self.tableView beginUpdates];
+		[self.tableView deleteSections:[NSIndexSet indexSetWithIndex:SECTION_ACTIONS] withRowAnimation:UITableViewRowAnimationRight];
+		actionsShown = NO;
+		[self.tableView endUpdates];
+	}
+	else if (!actionsShown && shouldShow) {
+		
+		[self.tableView beginUpdates];
+		[self.tableView insertSections:[NSIndexSet indexSetWithIndex:SECTION_ACTIONS] withRowAnimation:UITableViewRowAnimationLeft];
+		actionsShown = YES;
+		[self.tableView endUpdates];
 	}
 }
 
-- (void)uncheckAllFiles {
+// Calculates whether SECTION_ACTIONS should be displayed.
+- (BOOL)shouldShowActionsSection {
 	
-	NSInteger count = [self.tableView numberOfRowsInSection:SECTION_FILES];
-	for (int i = 0; i < count; ++i) {
-		NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:SECTION_FILES];
-		UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-		cell.accessoryType = UITableViewCellAccessoryNone;
+	if ([files count] && [[DBSession sharedSession] isLinked]) {
+		
+		return YES;
+	}
+	return NO;
+}
+
+// Deletes the specified file from the filesystem and updates the table view.
+- (void)deleteFile:(NSString*)filePath {
+	
+	for (int i = 0; i < [files count]; ++i) {
+
+		if ([filePath isEqualToString:[(NSURL *)[files objectAtIndex:i] path]]) {
+			
+			[self deleteFileAtIndex:i];
+			break;
+		}
+	}
+}
+
+// Deletes the file at 'index' from the filesystem and updates the table view.
+- (void)deleteFileAtIndex:(NSInteger)index {
+	
+	NSURL *fileUrl = [files objectAtIndex:index];
+	
+	// Delete the actual file
+	NSError *error = nil;
+	if (![[NSFileManager defaultManager] removeItemAtPath:[fileUrl path] error:&error]) {
+		NSLog(@"Error deleting %@: %@", [fileUrl path], error.description);
+		return;
+	}
+	
+	// Remove the file from the index
+	[files removeObjectAtIndex:index];
+	
+	// Remove the row from the table
+	[self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:index inSection:SECTION_FILES]] 
+						  withRowAnimation:UITableViewRowAnimationRight];
+	
+	// Since SECTION_FILES changed, update SECTION_ACTIONS
+	[self updateActionsSection];
+	
+	// If all files have been removed, reload SECTION_FILES to ensure the correct header and footer are shown
+	if (![files count]) {
+		[self.tableView reloadSections:[NSIndexSet indexSetWithIndex:SECTION_FILES] withRowAnimation:UITableViewRowAnimationNone];
 	}
 }
 
@@ -397,7 +428,7 @@
 	
 	NSMutableArray *fileUrls = [[NSMutableArray alloc] init];
 	
-	NSArray *checkedFiles = [self checkedRowsInTableView:self.tableView section:SECTION_FILES];
+	NSArray *checkedFiles = [self checkedCellsInTableView:self.tableView section:SECTION_FILES];
 	NSEnumerator *enumerator = [checkedFiles objectEnumerator];
 	id object;
 	while (object = [enumerator nextObject]) {
@@ -415,7 +446,6 @@
 - (void)transferInputFile {
 	
 	if (inputFile != nil) {
-		// TODO: specialize behavior based on settings and whether this is an iOS 4 openURL request
 		
 		NSArray *fileUrls = [NSArray arrayWithObject:inputFile];
 		DBUploader *uploader = [[DBUploader alloc] initWithFiles:fileUrls];
@@ -428,7 +458,6 @@
 	
 	NSArray *fileUrls = [self urlsForCheckedFiles];
 	if ([fileUrls count] == 0) {
-		// TODO: display alert to user
 		return;
 	}
 	
@@ -437,6 +466,10 @@
 	[uploader upload];
 }
 
+
+#pragma mark -
+#pragma mark DBUploaderDelegate methods
+
 - (void)uploaderBeganTransferringFiles:(DBUploader *)uploader {
 	
 	if (spinner == nil) {
@@ -444,6 +477,7 @@
 		spinner.mode = MBProgressHUDModeIndeterminate;
 		[self.view addSubview:spinner];
 	}
+	spinner.minShowTime = 2;
 	spinner.labelText = @"";
 	spinner.detailsLabelText = @"";
 	[spinner show:YES];
@@ -460,10 +494,7 @@
 	spinner.labelText = @"";
 	spinner.detailsLabelText = @"";
 	
-	NSError *error = nil;
-	if (![[NSFileManager defaultManager] removeItemAtPath:file error:&error]) {
-		NSLog(@"Error deleting %@: %@", file, [error description]);
-	}
+	[self deleteFile:file];
 }
 
 - (void)uploader:(DBUploader *)uploader failedToTransferFile:(NSString *)file withError:(NSError *)error {
@@ -477,9 +508,9 @@
 	spinner.labelText = @"Complete";
 	spinner.detailsLabelText = @"";
 	[spinner hide:YES];
-	// TODO: release spinner?
-	
-	[self updateFileList];
+	[spinner removeFromSuperview];
+	[spinner release];
+	spinner = nil;
 }
 
 - (void)uploaderHaltedFileTransfers:(DBUploader *)uploader {
@@ -487,9 +518,9 @@
 	spinner.labelText = @"Error";
 	spinner.detailsLabelText = @"";
 	[spinner hide:YES];
-	// TODO: release spinner?
-	
-	[self updateFileList];
+	[spinner removeFromSuperview];
+	[spinner release];
+	spinner = nil;
 }
 
 @end

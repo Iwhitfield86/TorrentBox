@@ -19,19 +19,23 @@
 
 @interface RootViewController : UITableViewController <DBUploaderDelegate, DBLoginControllerDelegate>{
 	
-	NSURL *inputFile;
+	NSURL *inputFile;			// Set by the AppDelegate when launched with a URL
 	NSMutableArray *files;
 	MBProgressHUD *spinner;
+	BOOL actionsShown;		// Tracks whether SECTION_ACTIONS is being displayed or not
 }
 
 - (UITableViewCell *)cellFromTableView:(UITableView *)tableView WithIdentifier:(NSString *)identifier;
-- (NSArray *)checkedRowsInTableView:(UITableView *)tableView section:(NSInteger)section;
+- (NSArray *)checkedCellsInTableView:(UITableView *)tableView section:(NSInteger)section;
 
-- (void)didPressLogin;
-- (void)updateButtons;
+- (void)didPressLoginButton;
 
-- (void)updateFileList;
-- (void)uncheckAllFiles;
+- (void)populateView;
+- (void)updateLoginButton;
+- (void)updateActionsSection;
+- (BOOL)shouldShowActionsSection;
+- (void)deleteFile:(NSString*)filePath;
+- (void)deleteFileAtIndex:(NSInteger)index;
 
 - (void)setInputFileUrl:(NSURL *)url forNewProcess:(BOOL)newProcess;
 - (void)identifyLocalFiles;
