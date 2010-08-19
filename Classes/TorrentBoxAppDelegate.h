@@ -8,6 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+// Misc Options
+static NSString* kAutoTransferInputFilesKey = @"kAutoTransferInputFilesKey";
+static NSString* kDeleteTransferedFiles = @"kDeleteTransferedFiles";
+static NSString* kIndexDocumentsDirectory = @"kIndexDocumentsDirectory";
+
 @interface TorrentBoxAppDelegate : NSObject <UIApplicationDelegate> {
     
     UIWindow *window;
