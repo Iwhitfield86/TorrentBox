@@ -18,6 +18,10 @@
 		D37868AF11E141D50069B42D /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D37868AE11E141D50069B42D /* Security.framework */; };
 		D37868BA11E142820069B42D /* DBUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = D37868B911E142820069B42D /* DBUploader.m */; };
 		D3786A6F11E16C710069B42D /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = D3786A6E11E16C710069B42D /* MBProgressHUD.m */; };
+		D39FE3FE122076B200ECCE7A /* Icon-512.png in Resources */ = {isa = PBXBuildFile; fileRef = D39FE3FD122076B200ECCE7A /* Icon-512.png */; };
+		D39FE416122079FC00ECCE7A /* Icon-57.png in Resources */ = {isa = PBXBuildFile; fileRef = D39FE413122079FC00ECCE7A /* Icon-57.png */; };
+		D39FE417122079FC00ECCE7A /* Icon-72.png in Resources */ = {isa = PBXBuildFile; fileRef = D39FE414122079FC00ECCE7A /* Icon-72.png */; };
+		D39FE418122079FC00ECCE7A /* Icon-114.png in Resources */ = {isa = PBXBuildFile; fileRef = D39FE415122079FC00ECCE7A /* Icon-114.png */; };
 		D3A338F4120F5A5A004F8CC3 /* DBAccountInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A338A1120F5A5A004F8CC3 /* DBAccountInfo.m */; };
 		D3A338F5120F5A5A004F8CC3 /* DBCreateAccountController.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A338A3120F5A5A004F8CC3 /* DBCreateAccountController.m */; };
 		D3A338F6120F5A5A004F8CC3 /* DBLoadingView.m in Sources */ = {isa = PBXBuildFile; fileRef = D3A338A5120F5A5A004F8CC3 /* DBLoadingView.m */; };
@@ -61,6 +65,8 @@
 		D3A3391C120F5A5A004F8CC3 /* db_link_header@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A338F1120F5A5A004F8CC3 /* db_link_header@2x.png */; };
 		D3A3391D120F5A5A004F8CC3 /* db_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A338F2120F5A5A004F8CC3 /* db_logo.png */; };
 		D3A3391E120F5A5A004F8CC3 /* db_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D3A338F3120F5A5A004F8CC3 /* db_logo@2x.png */; };
+		D3E4E46E1220835600E6A304 /* Launch-iPhone.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E4E46D1220835600E6A304 /* Launch-iPhone.png */; };
+		D3E4E4771220867F00E6A304 /* Launch-iPad.png in Resources */ = {isa = PBXBuildFile; fileRef = D3E4E4761220867F00E6A304 /* Launch-iPad.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +88,10 @@
 		D37868B911E142820069B42D /* DBUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBUploader.m; sourceTree = "<group>"; };
 		D3786A6D11E16C710069B42D /* MBProgressHUD.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
 		D3786A6E11E16C710069B42D /* MBProgressHUD.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		D39FE3FD122076B200ECCE7A /* Icon-512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-512.png"; sourceTree = "<group>"; };
+		D39FE413122079FC00ECCE7A /* Icon-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-57.png"; sourceTree = "<group>"; };
+		D39FE414122079FC00ECCE7A /* Icon-72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-72.png"; sourceTree = "<group>"; };
+		D39FE415122079FC00ECCE7A /* Icon-114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-114.png"; sourceTree = "<group>"; };
 		D3A338A0120F5A5A004F8CC3 /* DBAccountInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBAccountInfo.h; sourceTree = "<group>"; };
 		D3A338A1120F5A5A004F8CC3 /* DBAccountInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DBAccountInfo.m; sourceTree = "<group>"; };
 		D3A338A2120F5A5A004F8CC3 /* DBCreateAccountController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DBCreateAccountController.h; sourceTree = "<group>"; };
@@ -163,6 +173,8 @@
 		D3A338F2120F5A5A004F8CC3 /* db_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = db_logo.png; sourceTree = "<group>"; };
 		D3A338F3120F5A5A004F8CC3 /* db_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "db_logo@2x.png"; sourceTree = "<group>"; };
 		D3A33922120F5A90004F8CC3 /* DBConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DBConfig.h; path = ../DropboxSDK/DBConfig.h; sourceTree = "<group>"; };
+		D3E4E46D1220835600E6A304 /* Launch-iPhone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Launch-iPhone.png"; sourceTree = "<group>"; };
+		D3E4E4761220867F00E6A304 /* Launch-iPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Launch-iPad.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -228,6 +240,12 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D3E4E4761220867F00E6A304 /* Launch-iPad.png */,
+				D3E4E46D1220835600E6A304 /* Launch-iPhone.png */,
+				D39FE413122079FC00ECCE7A /* Icon-57.png */,
+				D39FE414122079FC00ECCE7A /* Icon-72.png */,
+				D39FE415122079FC00ECCE7A /* Icon-114.png */,
+				D39FE3FD122076B200ECCE7A /* Icon-512.png */,
 				28F335F01007B36200424DE2 /* RootViewController.xib */,
 				28AD735F0D9D9599002E5188 /* MainWindow.xib */,
 				8D1107310486CEB800E47090 /* TorrentBox-Info.plist */,
@@ -437,6 +455,12 @@
 				D3A3391C120F5A5A004F8CC3 /* db_link_header@2x.png in Resources */,
 				D3A3391D120F5A5A004F8CC3 /* db_logo.png in Resources */,
 				D3A3391E120F5A5A004F8CC3 /* db_logo@2x.png in Resources */,
+				D39FE3FE122076B200ECCE7A /* Icon-512.png in Resources */,
+				D39FE416122079FC00ECCE7A /* Icon-57.png in Resources */,
+				D39FE417122079FC00ECCE7A /* Icon-72.png in Resources */,
+				D39FE418122079FC00ECCE7A /* Icon-114.png in Resources */,
+				D3E4E46E1220835600E6A304 /* Launch-iPhone.png in Resources */,
+				D3E4E4771220867F00E6A304 /* Launch-iPad.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
