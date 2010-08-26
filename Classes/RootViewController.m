@@ -388,8 +388,6 @@
 	
 	[files removeAllObjects];
 	
-	NSFileManager *manager = [NSFileManager defaultManager];
-	
 	NSArray *documentPaths =  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
 	if ([documentPaths count] == 0) { return; }
 	
@@ -478,7 +476,32 @@
 	
 	if (inputFile != nil) {
 		
-		NSArray *fileUrls = [NSArray arrayWithObject:inputFile];
+		// TODO: this is a hack for a bug that only occurrs when inputFile is set.
+		// the input file URL begins with /private while the url in files[] does not.
+		// the file names match though, so we just match on that for now.
+		// also, here on iPad the calling [tempUrl path] causes a crash for some reason.
+		NSString *inputFilePath = [inputFile path];
+		NSString *inputFileName = [inputFilePath lastPathComponent];
+		
+		NSURL *targetUrl = nil;
+		for (int i = 0; i < [files count]; ++i) {
+			
+			NSURL *tempUrl = (NSURL *)[files objectAtIndex:i];
+			NSString *tempPath = [tempUrl path];
+			NSString *tempName = [tempPath lastPathComponent];
+			if ([tempName compare:inputFileName] == NSOrderedSame) {
+				
+				targetUrl = tempUrl;
+			}
+		}
+		
+		if (targetUrl == nil) {
+			
+			NSLog(@"No target URL for the input file could be determined");
+			return;
+		}
+		
+		NSArray *fileUrls = [NSArray arrayWithObject:targetUrl];
 		DBUploader *uploader = [[DBUploader alloc] initWithFiles:fileUrls];
 		uploader.delegate = self;
 		[uploader upload];
@@ -525,7 +548,10 @@
 	spinner.labelText = @"";
 	spinner.detailsLabelText = @"";
 	
-	[self deleteFile:file];
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:kDeleteTransferedFiles]) {
+		
+		[self deleteFile:file];
+	}
 }
 
 - (void)uploader:(DBUploader *)uploader failedToTransferFile:(NSString *)file withError:(NSError *)error {

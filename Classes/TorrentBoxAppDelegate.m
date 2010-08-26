@@ -47,6 +47,8 @@
 	return YES;
 }
 
+// TODO: there is a bug somewhere around here with iOS 4, UI doesn't update properly when returning from inactive state
+// workaround for initial release, set UIApplicationExitsOnSuspend key to YES
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
 	
 	// If there was an input URL, set it on the root view controller
