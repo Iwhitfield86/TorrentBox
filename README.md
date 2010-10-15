@@ -15,6 +15,8 @@ Features
 
 *NOTE:* TorrentBox is not a BitTorrent client, no P2P connections are established in the app.
 
+Check out some [tips and tricks](http://github.com/brianpartridge/TorrentBox/wiki/Tips-and-Tricks).
+
 
 Project Introduction
 --------------------
