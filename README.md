@@ -1,6 +1,8 @@
 TorrentBox
 ==========
 
+[![Click here to lend your support to: TorrentBox and make a donation at www.pledgie.com !](http://www.pledgie.com/campaigns/12340.png?skin_name=chrome)](http://www.pledgie.com/campaigns/12340)
+
 Description
 -----------
 Finally, a way to handle BitTorrent files on the iPad and iPhone, with TorrentBox you can bookmark torrent files for use later. Just browse to .torrent files and choose 'Open in "TorrentBox"' where they are bookmarked and automatically synched to your Dropbox.com account.   Don't use Dropbox? No problem, the torrent files are bookmarked in-app so that you can retrieve them next time you sync with iTunes. TorrentBox is great for when you are on the go. Just bookmark the torrents you are interested in and they'll be waiting for you when you get home.  
