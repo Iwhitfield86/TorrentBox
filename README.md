@@ -32,6 +32,14 @@ TorrentBox is designed for iOS 3.2 and above.
 
 TorrentBox has been rejected from the AppStore and will not be approved.  However, that shouldn't stop other developers capable of build and installing TorrentBox from using it on their personal devices.  TorrentBox was written to fill a niche need, so I'll be very happy if others get some use out of it.
 
+Building
+--------
+To build your own copy of TorrentBox and access the Dropbox API you'll need your own Dropbox developer account.  To do so:
+1. [Setup your account](https://www.dropbox.com/developers)
+2. Create an app
+3. Copy your app's key and secret into DropboxSDK/DBConfig.h
+4. Build and Run
+
 License
 -------
 MIT, see LICENSE file for details.
